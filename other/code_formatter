@@ -1,0 +1,1 @@
+awk '{ printf("%3u  %s\n", NR, $0); }' file.txt
