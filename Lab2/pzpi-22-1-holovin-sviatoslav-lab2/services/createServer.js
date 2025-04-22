@@ -10,6 +10,7 @@ const { router: notificationRouter } = require('../routes/notification');
 const { router: orderRouter } = require('../routes/order');
 const { router: sensorDataRouter } = require('../routes/sensorData');
 const { router: userRouter } = require('../routes/user');
+const { router: backupRouter } = require('../routes/backup');
 
 const createServer = (port) => {
   const app = express();
@@ -25,6 +26,7 @@ const createServer = (port) => {
   app.use('/orders', orderRouter);
   app.use('/sensorData', sensorDataRouter);
   app.use('/users', userRouter);
+  app.use('/backup', backupRouter);
 
   app.listen(port, () => {
     console.log(`Server started on port ${port}`);
