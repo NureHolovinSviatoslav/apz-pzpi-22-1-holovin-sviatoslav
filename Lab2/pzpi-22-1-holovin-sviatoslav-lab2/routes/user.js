@@ -122,7 +122,7 @@ const login = async (req, res) => {
 
 router.get('/', ...createAuthMiddleware([roles.ADMIN, roles.DBO]), getAll);
 router.get('/:username', ...createSelfMiddleware(), getOne);
-router.post('/', add);
+router.post('/', ...createAuthMiddleware([roles.ADMIN, roles.DBO]), add);
 router.patch(
   '/:username',
   ...createAuthMiddleware([roles.ADMIN, roles.DBO]),
