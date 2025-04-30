@@ -192,7 +192,7 @@ curl -X DELETE https://arkpz-pzpi-22-1-holovin-sviatoslav.onrender.com/inventory
 # Order
 
 ```bash
-curl -X POST https://arkpz-pzpi-22-1-holovin-sviatoslav.onrender.com/orders \
+curl -X POST http://localhost:3000/orders \
   -H "Content-Type: application/json" \
   -H "Authorization: BEARER " \
   -d '{
