@@ -1,0 +1,48 @@
+{
+  "version": 1,
+  "author": "Святослав Головін",
+  "editor": "wokwi",
+  "parts": [
+    {
+      "type": "board-esp32-devkit-c-v4",
+      "id": "esp",
+      "top": 124.8,
+      "left": 100.84,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-dht22",
+      "id": "dht1",
+      "top": -38.1,
+      "left": 129,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-potentiometer",
+      "id": "pot1",
+      "top": 37.1,
+      "left": -0.2,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-buzzer",
+      "id": "bz1",
+      "top": 271.2,
+      "left": -75,
+      "attrs": { "volume": "0.1" }
+    }
+  ],
+  "connections": [
+    ["esp:TX", "$serialMonitor:RX", "", []],
+    ["esp:RX", "$serialMonitor:TX", "", []],
+    ["esp:3V3", "dht1:VCC", "green", ["h0"]],
+    ["dht1:GND", "esp:GND.2", "black", ["v0"]],
+    ["esp:5", "dht1:SDA", "green", ["h0"]],
+    ["esp:5V", "pot1:VCC", "red", ["h0"]],
+    ["pot1:GND", "esp:GND.2", "black", ["v0"]],
+    ["pot1:SIG", "esp:34", "green", ["v0"]],
+    ["esp:GND.2", "bz1:1", "black", ["v0"]],
+    ["esp:25", "bz1:2", "green", ["v0"]]
+  ],
+  "dependencies": {}
+}
