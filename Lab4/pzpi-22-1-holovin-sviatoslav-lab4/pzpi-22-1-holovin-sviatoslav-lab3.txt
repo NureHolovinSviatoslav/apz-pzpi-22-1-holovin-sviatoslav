@@ -1,0 +1,736 @@
+﻿Харківський університет радіоелектроніки
+Факультет комп'ютерних наук
+Кафедра програмної інженерії
+
+
+
+
+
+
+
+
+
+
+ЗВІТ
+з лабораторної роботи №3
+з дисципліни "Архітектура програмного забезпечення"
+на тему: "Розробка мобільної частини системи"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Виконав
+ст. гр. ПЗПІ-22-1
+Головін Святослав Юрійович
+
+
+Перевірив
+ст. викладач катедри ПІ
+Сокорчук Ігор Петрович
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Харків 2025 р.
+1 ІСТОРІЯ ЗМІН
+
+
+№
+	Дата
+	Версія звіту
+	Опис змін та виправлень
+	1
+	22.04.2025
+	0.1
+	Створено документ, додано завдання та почато опис виконаної роботи.
+	2
+	22.04.2025
+	0.2
+	Додано опис функціоналу для операторів.
+	3
+	22.04.2025
+	0.3
+	Додано опис функціоналу для перегляду сповіщень.
+	________________
+
+
+2 ЗАВДАННЯ
+
+
+Розробити мобільну частину, яка буде містити: функції взаємодії з системою та функціонал перегляду сповіщень.
+________________
+
+
+3 ОПИС ВИКОНАНОЇ РОБОТИ
+
+
+Новою складовою програмної системи є мобільний клієнт, реалізований на мові Kotlin із використанням сучасної архітектури Jetpack Compose у поєднанні з MVVM (Model–View–ViewModel). Цей компонент розроблено для забезпечення зручного доступу користувачів до ключових функцій системи зі смартфонів, а саме: перегляду сповіщень, управління замовленнями, а також автентифікації за допомогою JWT-токена.
+Вибір мови Kotlin зумовлений її повною сумісністю з Android-платформою, виразною синтаксичною моделлю, високим рівнем безпеки типів та підтримкою функціонального програмування. Kotlin також пропонує сучасні можливості асинхронної обробки (через корутини), що критично важливо для клієнтських застосунків, які працюють з мережею.
+Обрана архітектура MVVM дозволяє чітко розмежувати відповідальності між інтерфейсом користувача (View), логікою відображення та станом (ViewModel), а також джерелами даних (Model). Такий підхід полегшує тестування, спрощує супровід коду та сприяє масштабованості. UI реалізується через Jetpack Compose - декларативний фреймворк, що дозволяє створювати адаптивні, реактивні інтерфейси з мінімальними витратами на шаблонний код, гарантуючи кращу інтеграцію з ViewModel та спрощення життєвого циклу UI-компонентів.
+Можливості застосунку детально зображені на відповідній діаграмі, та включають перелік функціональних можливостей, доступних користувачеві в мобільному клієнті після успішної авторизації, а саме користувач має змогу здійснювати вхід у систему та вихід з неї, що активує або очищає JWT-токен відповідно. Після входу він отримує доступ до перегляду сповіщень, а також до управління замовленнями. Робота з замовленнями передбачає три основні дії: створення нового запису, редагування наявного та його видалення. Усі ці операції пов’язані з попереднім переглядом загального списку замовлень, який слугує точкою входу до відповідних форм. Після завершення створення, редагування або видалення користувач автоматично повертається до списку замовлень, що забезпечує циклічність взаємодії та логічну завершеність сценаріїв. Уся взаємодія зосереджена в межах одного модуля - мобільного клієнта, який забезпечує користувачеві інтуїтивно зрозумілий інтерфейс доступу до ключових функцій системи.
+Важливим складником для правильного розмежування відповідальностей є винесення окремих сторінок у окремі частини додатка, таким чином формуючи певну діаграму станів додатка, що відображає повний життєвий цикл взаємодії користувача з інтерфейсом програми залежно від наявності або відсутності JWT-токена, що визначає стан автентифікації. Після запуску мобільного застосунку активується початковий стан ПеревіркаJWT, який перевіряє наявність токена: якщо токен відсутній, користувач автоматично перенаправляється на екран входу (Login); якщо токен присутній - потрапляє одразу на головну сторінку (Home). Зі сторінки Login у разі успішної автентифікації користувач також потрапляє на Home. На головному екрані передбачено переходи до вкладок Notifications (сповіщення) та Orders (замовлення), які викликаються натисканням відповідних кнопок. Додатково, з головної сторінки можливий вихід із системи, що очищає токен і повертає користувача назад на Login. Екран Notifications дозволяє повернення назад до Home через системну кнопку. Підрозділ Orders реалізовано у вигляді вкладеного стану, де початковим є список замовлень (OrdersList); звідти можна створити нове замовлення (OrderFormНовий) або відредагувати існуюче (OrderFormРедагування). Обидва формуляри мають можливість повернення назад до списку - після створення, редагування, видалення чи відміни. Загалом, структура побудована на принципах детермінованого станового переходу з повним контролем життєвого циклу авторизації та користувацької взаємодії.
+        Записуємо змістовне відео з описом проєкту, проставляємо таймкоди та завантажуємо на сервіс YouTube. Транскрипція та посилання на відео включено в додаток А.
+________________
+
+
+4 ВИСНОВКИ
+
+
+        У ході виконання роботи було розроблено мобільну частину, яка містить: функції взаємодії з системою та функціонал перегляду сповіщень.
+
+
+________________
+
+
+ДОДАТОК А
+ВІДЕОЗАПИС
+
+
+Відеозапис презентації результатів лабораторної роботи: https://youtu.be/4iokcVYk_j0
+
+
+Хронологічний опис відеозапису:
+0:00 Представлення студента групи ПЗПІ-22-1 Головіна Святослава.  
+0:03 Демонстрація результатів лабораторної роботи №3 з предмету "Архітектура ПЗ".  
+0:12 Завдання — створити мобільний клієнт для взаємодії з системою контролю зберігання вакцин.  
+0:24 Операції: перегляд та зміна інформації, додаткові можливості для користувача.  
+0:38 Огляд звіту: історія змін, доданий функціонал для роботи із системою та сповіщеннями.  
+0:51 Вибір Android як платформи, використання Kotlin і архітектури Jetpack Compose.  
+1:15 Опис архітектури MVVM: моделі, інтерфейс, відображення.  
+1:41 Реалізація авторизації: логін, збереження JWT токена, перевірка при кожному запиті.  
+2:08 Основні можливості додатку — робота з замовленнями.  
+2:22 Функціонал для операторів: створення замовлень, зміна статусу, видалення.  
+2:44 Перегляд сповіщень: перегляд історії, типу, кількості, часу.  
+3:12 Діаграми: навігаційна та логіки авторизації (старт з перевірки токену).  
+4:01 Логін веде до головного меню, доступ до сповіщень та замовлень.  
+4:08 Перехід зі сторінки замовлень до деталей, зміна статусу, створення і видалення.  
+4:13 Огляд коду: API-клієнт, структура навігації, сторінка авторизації, MainActivity.  
+5:00 Менеджмент токена, опис моделей, асинхронне підвантаження через колонки.  
+5:24 Форми для створення/оновлення замовлень, поля для редагування.  
+5:47 Запуск серверної частини у робочому режимі, запуск мобільного клієнта.  
+6:09 Огляд Android Studio як середовища розробки, запуск емулятора.  
+6:15 Логін і перевірка даних, вхід у систему як адмін, тестування авторизації.  
+6:43 Компоненти Jetpack Compose для побудови UI.  
+7:03 Перегляд сповіщень: ID, телефон, тип, час.  
+7:23 Перехід до сторінки замовлень: перегляд, додавання нового, оновлення статусу.  
+7:52 Оновлення списку після змін, видалення замовлення.  
+8:19 Навігація між екранами, ретроспективний перегляд даних.  
+8:32 Висновок: мобільний клієнт — корисне доповнення до веб-системи.  
+9:11 Переваги архітектури: розділення клієнта і серверної частини.  
+9:27 Лабораторна не вимагала змін у сервері, демонстрація гнучкого розширення.  
+9:50 Можливість додавання нових моделей, розділів, екранів.  
+10:02 Архітектура забезпечує зручну підтримку функціональності.  
+10:05 Завершення демонстрації лабораторної роботи №3. Подяка за перегляд.
+________________
+
+
+ДОДАТОК Б
+ГРАФІЧНІ МАТЕРІАЛИ
+
+
+  
+
+Рисунок Б.1 - Use-case діаграма мобільного клієнту
+
+
+  
+
+Рисунок Б.2 - Діаграма станів мобільного клієнту
+________________
+ДОДАТОК В
+ПРОГРАМНИЙ КОД
+
+
+В.1 Клієнт для вазаємодії з серверною частиною.
+Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab3/pzpi-22-1-holovin-sviatoslav-lab3/mobile/app/src/main/java/com/example/lb3/ApiClient.kt
+  1  package com.example.lb3
+  2  
+  3  import org.json.JSONArray
+  4  import org.json.JSONObject
+  5  import java.io.BufferedReader
+  6  import java.io.OutputStreamWriter
+  7  import java.net.HttpURLConnection
+  8  import java.net.URL
+  9  
+ 10  object ApiClient {
+ 11      private const val BASE = "http://10.0.2.2:3000"
+ 12      var token: String? = null
+ 13  
+ 14      private fun request(path: String, method: String, body: JSONObject? = null): String? {
+ 15          val conn = (URL("$BASE$path").openConnection() as HttpURLConnection).apply {
+ 16              requestMethod = method
+ 17              connectTimeout = 5000
+ 18              readTimeout = 5000
+ 19              doInput = true
+ 20              token?.let { setRequestProperty("Authorization", "Bearer $it") }
+ 21              if (body != null) {
+ 22                  doOutput = true
+ 23                  setRequestProperty("Content-Type", "application/json")
+ 24                  OutputStreamWriter(outputStream).use { it.write(body.toString()) }
+ 25              }
+ 26          }
+ 27          return try {
+ 28              BufferedReader(conn.inputStream.reader()).use { it.readText() }
+ 29          } catch (_: Exception) { null } finally { conn.disconnect() }
+ 30      }
+ 31  
+ 32      fun login(username: String, password: String): String? {
+ 33          val obj = JSONObject().put("username", username).put("password", password)
+ 34          val txt = request("/users/login", "POST", obj) ?: return null
+ 35          return JSONObject(txt).getString("accessToken")
+ 36      }
+ 37  
+ 38      fun getNotifications(): List<Notification> {
+ 39          val txt = request("/notifications", "GET") ?: return emptyList()
+ 40          val arr = JSONArray(txt)
+ 41          return List(arr.length()) { i ->
+ 42              arr.getJSONObject(i).let {
+ 43                  Notification(
+ 44                      it.getInt("notification_id"),
+ 45                      it.getString("phone"),
+ 46                      it.getString("sent_at"),
+ 47                      it.getString("message"),
+ 48                      it.getString("notification_type")
+ 49                  )
+ 50              }
+ 51          }
+ 52      }
+ 53  
+ 54      fun getOrders(): List<Order> {
+ 55          val txt = request("/orders", "GET") ?: return emptyList()
+ 56          val arr = JSONArray(txt)
+ 57          return List(arr.length()) { i ->
+ 58              arr.getJSONObject(i).let {
+ 59                  Order(
+ 60                      it.getInt("order_id"),
+ 61                      it.getString("username"),
+ 62                      it.getString("order_date"),
+ 63                      it.getString("order_status")
+ 64                  )
+ 65              }
+ 66          }
+ 67      }
+ 68  
+ 69      fun getOrder(id: Int): Order? {
+ 70          val txt = request("/orders/$id", "GET") ?: return null
+ 71          val o = JSONObject(txt)
+ 72          return Order(
+ 73              o.getInt("order_id"),
+ 74              o.getString("username"),
+ 75              o.getString("order_date"),
+ 76              o.getString("order_status")
+ 77          )
+ 78      }
+ 79  
+ 80      fun createOrder(username: String, status: String): Order? {
+ 81          val obj = JSONObject()
+ 82              .put("username", username)
+ 83              .put("order_status", status)
+ 84              .put("items", JSONArray())
+ 85          val txt = request("/orders", "POST", obj) ?: return null
+ 86          val o = JSONObject(txt)
+ 87          return Order(
+ 88              o.getInt("order_id"),
+ 89              o.getString("username"),
+ 90              o.getString("order_date"),
+ 91              o.getString("order_status")
+ 92          )
+ 93      }
+ 94  
+ 95      fun updateOrder(id: Int, status: String): Order? {
+ 96          val txt = request(
+ 97              "/orders/$id",
+ 98              "PATCH",
+ 99              JSONObject().put("order_status", status).put("items", JSONArray())
+100          ) ?: return null
+101          val o = JSONObject(txt)
+102          return Order(
+103              o.getInt("order_id"),
+104              o.getString("username"),
+105              o.getString("order_date"),
+106              o.getString("order_status")
+107          )
+108      }
+109  
+110      fun deleteOrder(id: Int) {
+111          request("/orders/$id", "DELETE")
+112      }
+113  }
+
+
+В.2 Головний файл.
+Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab3/pzpi-22-1-holovin-sviatoslav-lab3/mobile/app/src/main/java/com/example/lb3/App.kt
+  1  package com.example.lb3
+  2  
+  3  import androidx.compose.foundation.layout.padding
+  4  import androidx.compose.material3.Scaffold
+  5  import androidx.compose.runtime.Composable
+  6  import androidx.compose.ui.Modifier
+  7  import androidx.navigation.compose.NavHost
+  8  import androidx.navigation.compose.composable
+  9  import androidx.navigation.compose.rememberNavController
+ 10  
+ 11  @Composable
+ 12  fun App(
+ 13      hasToken: Boolean,
+ 14      saveToken: (String) -> Unit,
+ 15      logout: () -> Unit
+ 16  ) {
+ 17      val nav = rememberNavController()
+ 18      Scaffold { padding ->
+ 19          NavHost(
+ 20              navController = nav,
+ 21              startDestination = if (hasToken) "home" else "login",
+ 22              modifier = Modifier.padding(padding)
+ 23          ) {
+ 24              composable("login") { LoginScreen(nav, saveToken) }
+ 25              composable("home") { HomeScreen(nav, logout) }
+ 26              composable("notifications") { NotificationsScreen(nav) }
+ 27              composable("orders") { OrdersListScreen(nav) }
+ 28              composable("orderForm/{id}") { back ->
+ 29                  val id = back.arguments?.getString("id")?.toInt() ?: 0
+ 30                  OrderFormScreen(nav, id)
+ 31              }
+ 32          }
+ 33      }
+ 34  }
+
+
+В.3 Головний екран.
+Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab3/pzpi-22-1-holovin-sviatoslav-lab3/mobile/app/src/main/java/com/example/lb3/HomeScreen.kt
+  1  package com.example.lb3
+  2  
+  3  import androidx.compose.foundation.layout.*
+  4  import androidx.compose.material3.Button
+  5  import androidx.compose.material3.Text
+  6  import androidx.compose.runtime.Composable
+  7  import androidx.compose.ui.Alignment
+  8  import androidx.compose.ui.Modifier
+  9  import androidx.compose.ui.unit.dp
+ 10  import androidx.navigation.NavController
+ 11  
+ 12  @Composable
+ 13  fun HomeScreen(nav: NavController, logout: () -> Unit) {
+ 14      Column(
+ 15          Modifier
+ 16              .fillMaxSize()
+ 17              .padding(24.dp),
+ 18          horizontalAlignment = Alignment.CenterHorizontally,
+ 19          verticalArrangement = Arrangement.Center
+ 20      ) {
+ 21          Button(
+ 22              onClick = { nav.navigate("notifications") },
+ 23              modifier = Modifier.fillMaxWidth()
+ 24          ) { Text("Сповіщення") }
+ 25  
+ 26          Spacer(Modifier.height(16.dp))
+ 27  
+ 28          Button(
+ 29              onClick = { nav.navigate("orders") },
+ 30              modifier = Modifier.fillMaxWidth()
+ 31          ) { Text("Замовлення") }
+ 32  
+ 33          Spacer(Modifier.height(32.dp))
+ 34  
+ 35          Button(
+ 36              onClick = {
+ 37                  logout()
+ 38                  nav.navigate("login") {
+ 39                      popUpTo("home") { inclusive = true }
+ 40                  }
+ 41              },
+ 42              modifier = Modifier.fillMaxWidth()
+ 43          ) { Text("Вийти") }
+ 44      }
+ 45  }
+
+
+В.4 Сторінка авторизації.
+Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab3/pzpi-22-1-holovin-sviatoslav-lab3/mobile/app/src/main/java/com/example/lb3/LoginScreen.kt
+  1  package com.example.lb3
+  2  
+  3  import androidx.compose.foundation.layout.*
+  4  import androidx.compose.material3.Button
+  5  import androidx.compose.material3.OutlinedTextField
+  6  import androidx.compose.material3.Text
+  7  import androidx.compose.material3.Scaffold
+  8  import androidx.compose.runtime.*
+  9  import androidx.compose.ui.Modifier
+ 10  import androidx.compose.ui.unit.dp
+ 11  import androidx.navigation.NavController
+ 12  import kotlinx.coroutines.Dispatchers
+ 13  import kotlinx.coroutines.launch
+ 14  import kotlinx.coroutines.withContext
+ 15  
+ 16  @Composable
+ 17  fun LoginScreen(nav: NavController, saveToken: (String) -> Unit) {
+ 18      val scope = rememberCoroutineScope()
+ 19      var user by remember { mutableStateOf("") }
+ 20      var pass by remember { mutableStateOf("") }
+ 21      var error by remember { mutableStateOf("") }
+ 22  
+ 23      Scaffold { padding ->
+ 24          Column(
+ 25              Modifier
+ 26                  .padding(padding)
+ 27                  .fillMaxSize()
+ 28                  .padding(32.dp)
+ 29          ) {
+ 30              OutlinedTextField(
+ 31                  value = user,
+ 32                  onValueChange = { user = it },
+ 33                  label = { Text("Username") },
+ 34                  modifier = Modifier.fillMaxWidth()
+ 35              )
+ 36              Spacer(Modifier.height(8.dp))
+ 37              OutlinedTextField(
+ 38                  value = pass,
+ 39                  onValueChange = { pass = it },
+ 40                  label = { Text("Password") },
+ 41                  modifier = Modifier.fillMaxWidth()
+ 42              )
+ 43              Spacer(Modifier.height(16.dp))
+ 44              Button(
+ 45                  onClick = {
+ 46                      error = ""
+ 47                      scope.launch {
+ 48                          val token = withContext(Dispatchers.IO) {
+ 49                              ApiClient.login(user.trim(), pass.trim())
+ 50                          }
+ 51                          if (token == null) {
+ 52                              error = "Невірні дані"
+ 53                          } else {
+ 54                              saveToken(token)
+ 55                              nav.navigate("home") {
+ 56                                  popUpTo("login") { inclusive = true }
+ 57                              }
+ 58                          }
+ 59                      }
+ 60                  },
+ 61                  modifier = Modifier.fillMaxWidth()
+ 62              ) { Text("Увійти") }
+ 63              if (error.isNotEmpty()) {
+ 64                  Spacer(Modifier.height(8.dp))
+ 65                  Text(error)
+ 66              }
+ 67          }
+ 68      }
+ 69  }
+
+
+В.5 Корневий файл.
+Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab3/pzpi-22-1-holovin-sviatoslav-lab3/mobile/app/src/main/java/com/example/lb3/MainActivity.kt
+  1  package com.example.lb3
+  2  
+  3  import android.content.Context
+  4  import android.os.Bundle
+  5  import androidx.activity.ComponentActivity
+  6  import androidx.activity.compose.setContent
+  7  import androidx.activity.enableEdgeToEdge
+  8  import androidx.compose.runtime.*
+  9  import com.example.lb3.ui.theme.Lb3Theme
+ 10  
+ 11  class MainActivity : ComponentActivity() {
+ 12      override fun onCreate(savedInstanceState: Bundle?) {
+ 13          super.onCreate(savedInstanceState)
+ 14          val prefs = getSharedPreferences("auth", Context.MODE_PRIVATE)
+ 15          ApiClient.token = prefs.getString("jwt", null)
+ 16          enableEdgeToEdge()
+ 17          setContent {
+ 18              val tokenState = remember { mutableStateOf(ApiClient.token) }
+ 19              Lb3Theme {
+ 20                  App(
+ 21                      hasToken = tokenState.value != null,
+ 22                      saveToken = { t ->
+ 23                          ApiClient.token = t
+ 24                          prefs.edit().putString("jwt", t).apply()
+ 25                          tokenState.value = t
+ 26                      },
+ 27                      logout = {
+ 28                          ApiClient.token = null
+ 29                          prefs.edit().remove("jwt").apply()
+ 30                          tokenState.value = null
+ 31                      }
+ 32                  )
+ 33              }
+ 34          }
+ 35      }
+ 36  }
+
+
+В.6 Модель повідомлення.
+Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab3/pzpi-22-1-holovin-sviatoslav-lab3/mobile/app/src/main/java/com/example/lb3/Notification.kt
+  1  package com.example.lb3
+  2  
+  3  data class Notification(
+  4      val notification_id: Int,
+  5      val phone: String,
+  6      val sent_at: String,
+  7      val message: String,
+  8      val notification_type: String
+  9  )
+
+
+В.7 Список повідомлень
+Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab3/pzpi-22-1-holovin-sviatoslav-lab3/mobile/app/src/main/java/com/example/lb3/NotificationScreen.kt
+  1  package com.example.lb3
+  2  
+  3  import androidx.compose.foundation.layout.*
+  4  import androidx.compose.foundation.lazy.LazyColumn
+  5  import androidx.compose.foundation.lazy.items
+  6  import androidx.compose.material3.Divider
+  7  import androidx.compose.material3.Text
+  8  import androidx.compose.runtime.*
+  9  import androidx.compose.ui.Modifier
+ 10  import androidx.compose.ui.unit.dp
+ 11  import androidx.lifecycle.compose.LifecycleResumeEffect
+ 12  import androidx.navigation.NavController
+ 13  import kotlinx.coroutines.Dispatchers
+ 14  import kotlinx.coroutines.launch
+ 15  import kotlinx.coroutines.withContext
+ 16  
+ 17  @Composable
+ 18  fun NotificationsScreen(nav: NavController) {
+ 19      val scope = rememberCoroutineScope()
+ 20      var list by remember { mutableStateOf(listOf<Notification>()) }
+ 21  
+ 22      fun load() = scope.launch {
+ 23          list = withContext(Dispatchers.IO) { ApiClient.getNotifications() }
+ 24      }
+ 25  
+ 26      LifecycleResumeEffect(Unit) { load(); onPauseOrDispose { } }
+ 27  
+ 28      Column(Modifier.fillMaxSize().padding(16.dp)) {
+ 29          Text("Усі сповіщення", Modifier.padding(bottom = 8.dp))
+ 30          Row(Modifier.fillMaxWidth()) {
+ 31              Text("ID", Modifier.weight(0.1f))
+ 32              Text("Телефон", Modifier.weight(0.3f))
+ 33              Text("Тип", Modifier.weight(0.2f))
+ 34              Text("Час", Modifier.weight(0.4f))
+ 35          }
+ 36          Divider()
+ 37          LazyColumn {
+ 38              items(list) { n ->
+ 39                  Row(Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
+ 40                      Text(n.notification_id.toString(), Modifier.weight(0.1f))
+ 41                      Text(n.phone, Modifier.weight(0.3f))
+ 42                      Text(n.notification_type, Modifier.weight(0.2f))
+ 43                      Text(n.sent_at, Modifier.weight(0.4f))
+ 44                  }
+ 45                  Divider()
+ 46              }
+ 47          }
+ 48      }
+ 49  }
+
+
+В.8 Модель замовлення.
+Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab3/pzpi-22-1-holovin-sviatoslav-lab3/mobile/app/src/main/java/com/example/lb3/Order.kt
+  1  package com.example.lb3
+  2  
+  3  data class Order(
+  4      val order_id: Int,
+  5      val username: String,
+  6      val order_date: String,
+  7      val order_status: String
+  8  )
+
+
+В.9 Сторінка редагування замовлення.
+Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab3/pzpi-22-1-holovin-sviatoslav-lab3/mobile/app/src/main/java/com/example/lb3/OrderFormScreen.kt
+  1  package com.example.lb3
+  2  
+  3  import androidx.compose.foundation.layout.*
+  4  import androidx.compose.material3.Button
+  5  import androidx.compose.material3.OutlinedTextField
+  6  import androidx.compose.material3.Text
+  7  import androidx.compose.material3.Scaffold
+  8  import androidx.compose.runtime.*
+  9  import androidx.compose.ui.Modifier
+ 10  import androidx.compose.ui.unit.dp
+ 11  import androidx.lifecycle.compose.LifecycleResumeEffect
+ 12  import androidx.navigation.NavController
+ 13  import kotlinx.coroutines.Dispatchers
+ 14  import kotlinx.coroutines.launch
+ 15  import kotlinx.coroutines.withContext
+ 16  
+ 17  @Composable
+ 18  fun OrderFormScreen(nav: NavController, orderId: Int) {
+ 19      val scope = rememberCoroutineScope()
+ 20      var username by remember { mutableStateOf("") }
+ 21      var status   by remember { mutableStateOf("") }
+ 22      var isNew    by remember { mutableStateOf(orderId == 0) }
+ 23  
+ 24      fun load() = scope.launch {
+ 25          if (!isNew) {
+ 26              ApiClient.getOrder(orderId)?.let {
+ 27                  username = it.username
+ 28                  status   = it.order_status
+ 29              }
+ 30          }
+ 31      }
+ 32  
+ 33      LifecycleResumeEffect(Unit) { load(); onPauseOrDispose { } }
+ 34  
+ 35      Scaffold { padding ->
+ 36          Column(
+ 37              Modifier
+ 38                  .padding(padding)
+ 39                  .fillMaxSize()
+ 40                  .padding(16.dp)
+ 41          ) {
+ 42              OutlinedTextField(
+ 43                  value = username,
+ 44                  onValueChange = { username = it },
+ 45                  label = { Text("Користувач") },
+ 46                  modifier = Modifier.fillMaxWidth(),
+ 47                  enabled = isNew
+ 48              )
+ 49              Spacer(Modifier.height(8.dp))
+ 50              OutlinedTextField(
+ 51                  value = status,
+ 52                  onValueChange = { status = it },
+ 53                  label = { Text("Статус") },
+ 54                  modifier = Modifier.fillMaxWidth()
+ 55              )
+ 56              Spacer(Modifier.height(16.dp))
+ 57              Row {
+ 58                  Button(
+ 59                      onClick = {
+ 60                          scope.launch(Dispatchers.IO) {
+ 61                              if (isNew) {
+ 62                                  ApiClient.createOrder(username.trim(), status.trim())
+ 63                              } else {
+ 64                                  ApiClient.updateOrder(orderId, status.trim())
+ 65                              }
+ 66                              withContext(Dispatchers.Main) { nav.popBackStack() }
+ 67                          }
+ 68                      },
+ 69                      modifier = Modifier.weight(1f)
+ 70                  ) {
+ 71                      Text(if (isNew) "Створити" else "Зберегти")
+ 72                  }
+ 73                  if (!isNew) {
+ 74                      Spacer(Modifier.width(8.dp))
+ 75                      Button(
+ 76                          onClick = {
+ 77                              scope.launch(Dispatchers.IO) {
+ 78                                  ApiClient.deleteOrder(orderId)
+ 79                                  withContext(Dispatchers.Main) { nav.popBackStack() }
+ 80                              }
+ 81                          },
+ 82                          modifier = Modifier.weight(1f)
+ 83                      ) { Text("Видалити") }
+ 84                  }
+ 85              }
+ 86          }
+ 87      }
+ 88  }
+
+
+В.10 Список замовлень
+Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab3/pzpi-22-1-holovin-sviatoslav-lab3/mobile/app/src/main/java/com/example/lb3/OrdersListScreen.kt
+  1  package com.example.lb3
+  2  
+  3  import androidx.compose.foundation.clickable
+  4  import androidx.compose.foundation.layout.*
+  5  import androidx.compose.foundation.lazy.LazyColumn
+  6  import androidx.compose.foundation.lazy.items
+  7  import androidx.compose.material3.Divider
+  8  import androidx.compose.material3.FloatingActionButton
+  9  import androidx.compose.material3.Text
+ 10  import androidx.compose.material3.Scaffold
+ 11  import androidx.compose.runtime.*
+ 12  import androidx.compose.ui.Modifier
+ 13  import androidx.compose.ui.unit.dp
+ 14  import androidx.lifecycle.compose.LifecycleResumeEffect
+ 15  import androidx.navigation.NavController
+ 16  import kotlinx.coroutines.Dispatchers
+ 17  import kotlinx.coroutines.launch
+ 18  import kotlinx.coroutines.withContext
+ 19  
+ 20  @Composable
+ 21  fun OrdersListScreen(nav: NavController) {
+ 22      val scope = rememberCoroutineScope()
+ 23      var orders by remember { mutableStateOf(listOf<Order>()) }
+ 24  
+ 25      fun load() = scope.launch {
+ 26          orders = withContext(Dispatchers.IO) { ApiClient.getOrders() }
+ 27      }
+ 28  
+ 29      LifecycleResumeEffect(Unit) { load(); onPauseOrDispose { } }
+ 30  
+ 31      Scaffold(
+ 32          floatingActionButton = {
+ 33              FloatingActionButton(onClick = { nav.navigate("orderForm/0") }) { Text("+") }
+ 34          }
+ 35      ) { padding ->
+ 36          Column(
+ 37              Modifier
+ 38                  .padding(padding)
+ 39                  .fillMaxSize()
+ 40                  .padding(16.dp)
+ 41          ) {
+ 42              Text("Замовлення", Modifier.padding(bottom = 8.dp))
+ 43              Row(Modifier.fillMaxWidth()) {
+ 44                  Text("ID", Modifier.weight(0.15f))
+ 45                  Text("User", Modifier.weight(0.35f))
+ 46                  Text("Статус", Modifier.weight(0.5f))
+ 47              }
+ 48              Divider()
+ 49              LazyColumn {
+ 50                  items(orders) { o ->
+ 51                      Row(
+ 52                          Modifier
+ 53                              .fillMaxWidth()
+ 54                              .clickable { nav.navigate("orderForm/${o.order_id}") }
+ 55                              .padding(vertical = 6.dp)
+ 56                      ) {
+ 57                          Text(o.order_id.toString(), Modifier.weight(0.15f))
+ 58                          Text(o.username, Modifier.weight(0.35f))
+ 59                          Text(o.order_status, Modifier.weight(0.5f))
+ 60                      }
+ 61                      Divider()
+ 62                  }
+ 63              }
+ 64          }
+ 65      }
+ 66  }
