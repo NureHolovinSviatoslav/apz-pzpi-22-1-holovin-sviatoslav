@@ -8,7 +8,7 @@ import java.net.HttpURLConnection
 import java.net.URL
 
 object ApiClient {
-    private const val BASE = "http://10.0.2.2:3000"
+    private const val BASE = "https://apz-pzpi-22-1-holovin-sviatoslav.onrender.com"
     var token: String? = null
 
     private fun request(path: String, method: String, body: JSONObject? = null): String? {
