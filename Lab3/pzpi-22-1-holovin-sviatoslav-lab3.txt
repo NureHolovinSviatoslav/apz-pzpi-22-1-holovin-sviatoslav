@@ -14,7 +14,7 @@
 ЗВІТ
 з лабораторної роботи №3
 з дисципліни "Архітектура програмного забезпечення"
-на тему: "Розробка мобільної частини системи"
+на тему: "Розробка вебклієнта системи"
 
 
 
@@ -78,43 +78,72 @@
 	Версія звіту
 	Опис змін та виправлень
 	1
-	22.04.2025
+	01.05.2025
 	0.1
 	Створено документ, додано завдання та почато опис виконаної роботи.
 	2
-	22.04.2025
+	01.05.2025
 	0.2
 	Додано опис функціоналу для операторів.
 	3
-	22.04.2025
+	01.05.2025
 	0.3
-	Додано опис функціоналу для перегляду сповіщень.
+	Додано опис функціоналу для адміністраторів.
+	4
+	01.05.2025
+	0.4
+	Додано опис функціоналу для операторів над базою даних.
+	5
+	01.05.2025
+	0.5
+	Додано опис архітектурних рішень.
 	________________
 
 
 2 ЗАВДАННЯ
 
 
-Розробити мобільну частину, яка буде містити: функції взаємодії з системою та функціонал перегляду сповіщень.
+Розробити веб частину, яка забезпечить повноцінну взаємодію користувача з наявними модулями через інтерфейс, реалізований на React. Основний функціонал якої міститиме CRUD-операції з локаціями, замовленнями та вакцинами, а також можливість перегляду сповіщень та даних сенсорів. Крім того, необхідно реалізувати модуль звітності по локаціях і окремий інтерфейс для повного експорту та імпорту всієї бази даних через захищене паролем вікно.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ________________
 
 
 3 ОПИС ВИКОНАНОЇ РОБОТИ
 
 
-Новою складовою програмної системи є мобільний клієнт, реалізований на мові Kotlin із використанням сучасної архітектури Jetpack Compose у поєднанні з MVVM (Model–View–ViewModel). Цей компонент розроблено для забезпечення зручного доступу користувачів до ключових функцій системи зі смартфонів, а саме: перегляду сповіщень, управління замовленнями, а також автентифікації за допомогою JWT-токена.
-Вибір мови Kotlin зумовлений її повною сумісністю з Android-платформою, виразною синтаксичною моделлю, високим рівнем безпеки типів та підтримкою функціонального програмування. Kotlin також пропонує сучасні можливості асинхронної обробки (через корутини), що критично важливо для клієнтських застосунків, які працюють з мережею.
-Обрана архітектура MVVM дозволяє чітко розмежувати відповідальності між інтерфейсом користувача (View), логікою відображення та станом (ViewModel), а також джерелами даних (Model). Такий підхід полегшує тестування, спрощує супровід коду та сприяє масштабованості. UI реалізується через Jetpack Compose - декларативний фреймворк, що дозволяє створювати адаптивні, реактивні інтерфейси з мінімальними витратами на шаблонний код, гарантуючи кращу інтеграцію з ViewModel та спрощення життєвого циклу UI-компонентів.
-Можливості застосунку детально зображені на відповідній діаграмі, та включають перелік функціональних можливостей, доступних користувачеві в мобільному клієнті після успішної авторизації, а саме користувач має змогу здійснювати вхід у систему та вихід з неї, що активує або очищає JWT-токен відповідно. Після входу він отримує доступ до перегляду сповіщень, а також до управління замовленнями. Робота з замовленнями передбачає три основні дії: створення нового запису, редагування наявного та його видалення. Усі ці операції пов’язані з попереднім переглядом загального списку замовлень, який слугує точкою входу до відповідних форм. Після завершення створення, редагування або видалення користувач автоматично повертається до списку замовлень, що забезпечує циклічність взаємодії та логічну завершеність сценаріїв. Уся взаємодія зосереджена в межах одного модуля - мобільного клієнта, який забезпечує користувачеві інтуїтивно зрозумілий інтерфейс доступу до ключових функцій системи.
-Важливим складником для правильного розмежування відповідальностей є винесення окремих сторінок у окремі частини додатка, таким чином формуючи певну діаграму станів додатка, що відображає повний життєвий цикл взаємодії користувача з інтерфейсом програми залежно від наявності або відсутності JWT-токена, що визначає стан автентифікації. Після запуску мобільного застосунку активується початковий стан ПеревіркаJWT, який перевіряє наявність токена: якщо токен відсутній, користувач автоматично перенаправляється на екран входу (Login); якщо токен присутній - потрапляє одразу на головну сторінку (Home). Зі сторінки Login у разі успішної автентифікації користувач також потрапляє на Home. На головному екрані передбачено переходи до вкладок Notifications (сповіщення) та Orders (замовлення), які викликаються натисканням відповідних кнопок. Додатково, з головної сторінки можливий вихід із системи, що очищає токен і повертає користувача назад на Login. Екран Notifications дозволяє повернення назад до Home через системну кнопку. Підрозділ Orders реалізовано у вигляді вкладеного стану, де початковим є список замовлень (OrdersList); звідти можна створити нове замовлення (OrderFormНовий) або відредагувати існуюче (OrderFormРедагування). Обидва формуляри мають можливість повернення назад до списку - після створення, редагування, видалення чи відміни. Загалом, структура побудована на принципах детермінованого станового переходу з повним контролем життєвого циклу авторизації та користувацької взаємодії.
-        Записуємо змістовне відео з описом проєкту, проставляємо таймкоди та завантажуємо на сервіс YouTube. Транскрипція та посилання на відео включено в додаток А.
+Веб частина програмної системи реалізована за допомогою бібліотеки React із використанням компонентного підходу та архітектурної моделі MVC (Model–View–Controller), адаптованої під клієнтське середовище. Цей компонент покликаний забезпечити зручну роботу з основними сутностями - локаціями, замовленнями, вакцинами - а також надати засоби для перегляду сповіщень, сенсорних даних, генерації звітів і централізованого резервного копіювання бази.
+Керування формами здійснюється через бібліотеку react-hook-form, яка забезпечує ефективну обробку стану полів, валідацію та взаємодію з типізованими структурами. Вона дозволяє зменшити шаблонний код і забезпечити надійну перевірку вхідних даних перед відправкою запитів до серверу.
+Основу взаємодії з API формують запити типу query та mutation, що реалізовані з використанням бібліотеки react-query. Цей інструмент дозволяє інкапсулювати логіку асинхронного доступу до даних, автоматично кешувати результати, повторно використовувати запити та управляти станом завантаження, помилок або оновлення. Такий підхід дає змогу ізолювати бізнес-логіку від візуального представлення та знизити кількість ручної обробки асинхронності.
+Архітектура MVC у цій системі адаптована наступним чином: Model представлено окремими функціями доступу до API, які відповідають за отримання та модифікацію даних; View реалізується у вигляді функціональних компонентів, що відповідають за інтерфейс користувача; Controller - це логіка, що обʼєднує ці компоненти: керує викликами запитів, обробкою форм, навігацією та валідацією. Така структура забезпечує чисте розділення відповідальностей, високий рівень повторного використання компонентів і полегшення процесу тестування.
+Загалом, обрана архітектура дозволяє створити гнучкий, розширюваний інтерфейс, що легко масштабується разом зі зростанням функціональності та підтримує стабільність і зрозумілість у великому кодовому проєкті.
+Можливості застосунку детально зображені на відповідній діаграмі з урахуванням моделі доступу на основі ролей. У системі виокремлено три рівні користувачів: DBO, Admin та Staff, які утворюють ієрархічну структуру спадкування прав: DBO наслідує права Admin, а Admin - права Staff. Така побудова дозволяє централізовано керувати доступом та уникати дублювання. Користувачі з роллю Staff мають базовий набір можливостей: перегляд, створення та оновлення даних про локації та замовлення, перегляд звітів по локаціях, сповіщень та даних сенсорів. Це відповідає основним операціям із супроводу логістичних і моніторингових процесів. Адміністратори отримують додатковий доступ до модуля управління вакцинами - з можливістю перегляду, створення та оновлення відповідних записів. Це дозволяє їм здійснювати повний контроль за інвентарем у межах визначених обов’язків. Нарешті, DBO (Оператор бази даних) - найвищий рівень доступу, що має унікальне право на виконання операцій резервного копіювання та відновлення бази даних (експорт / імпорт), які є критичними для підтримання цілісності та надійності всієї системи. Для кращого розуміння системи загалом всі компоненти винесені на відповідну діаграму.
+Важливим складником є внутрішня логіка компонента експорту та імпорту бази даних у межах головної форми інтерфейсу, що представлена на відповідній діаграмі станів. Початковим станом є Порожня форма, у якій очікується введення пароля. Введення пароля переводить систему в стан ОчікуєПароль, який допускає подальше заповнення поля з даними для імпорту - це переводить компонент у стан ОчікуєДані. Тут користувач може як ввести дані вручну, так і залишити це поле порожнім (для експорту). Залежно від подальших дій користувача (натискання кнопок Export або Import), система переходить до відповідного вкладеного підстану - Експорт або Імпорт, кожен з яких має цикл обробки запиту. На першому етапі надсилається запит (Відправка), який залежно від відповіді сервера переводить систему до станів Успіх або Помилка. У випадку експорту, при успіху отримується закодований рядок (), а при імпорті - автоматично виконується перехід на головну сторінку. Успішне або неуспішне завершення операції призводить до переходу в узагальнений стан Готово, де результат (успішний або з помилкою) відображається у формі (ПоказРезультату). Звідси користувач може або очистити форму (натиск "Clear" - повернення до Порожня), або змінити будь-яке поле, що призведе до повторного входу в стан ОчікуєДані.
+Додатково продемонстровано ключові сценарії використання як діаграма взаємодії.
+Записуємо змістовне відео з описом проєкту, проставляємо таймкоди та завантажуємо на сервіс YouTube. Транскрипція та посилання на відео включено в додаток А.
 ________________
 
 
 4 ВИСНОВКИ
 
 
-        У ході виконання роботи було розроблено мобільну частину, яка містить: функції взаємодії з системою та функціонал перегляду сповіщень.
+        У ході виконання роботи було розроблено веб частину, яка забезпечує повноцінну взаємодію користувача з наявними модулями через інтерфейс, реалізований на React. Основний функціонал якої міститись CRUD-операції з локаціями, замовленнями та вакцинами, а також можливість перегляду сповіщень та даних сенсорів. Крім того, реалізовано модуль звітності по локаціях і окремий інтерфейс для повного експорту та імпорту всієї бази даних через захищене паролем вікно.
 
 
 ________________
@@ -124,41 +153,43 @@ ________________
 ВІДЕОЗАПИС
 
 
-Відеозапис презентації результатів лабораторної роботи: https://youtu.be/4iokcVYk_j0
+Відеозапис презентації результатів лабораторної роботи: https://youtu.be/CP29fgugc6Y
 
 
 Хронологічний опис відеозапису:
-0:00 Представлення студента групи ПЗПІ-22-1 Головіна Святослава.  
-0:03 Демонстрація результатів лабораторної роботи №3 з предмету "Архітектура ПЗ".  
-0:12 Завдання — створити мобільний клієнт для взаємодії з системою контролю зберігання вакцин.  
-0:24 Операції: перегляд та зміна інформації, додаткові можливості для користувача.  
-0:38 Огляд звіту: історія змін, доданий функціонал для роботи із системою та сповіщеннями.  
-0:51 Вибір Android як платформи, використання Kotlin і архітектури Jetpack Compose.  
-1:15 Опис архітектури MVVM: моделі, інтерфейс, відображення.  
-1:41 Реалізація авторизації: логін, збереження JWT токена, перевірка при кожному запиті.  
-2:08 Основні можливості додатку — робота з замовленнями.  
-2:22 Функціонал для операторів: створення замовлень, зміна статусу, видалення.  
-2:44 Перегляд сповіщень: перегляд історії, типу, кількості, часу.  
-3:12 Діаграми: навігаційна та логіки авторизації (старт з перевірки токену).  
-4:01 Логін веде до головного меню, доступ до сповіщень та замовлень.  
-4:08 Перехід зі сторінки замовлень до деталей, зміна статусу, створення і видалення.  
-4:13 Огляд коду: API-клієнт, структура навігації, сторінка авторизації, MainActivity.  
-5:00 Менеджмент токена, опис моделей, асинхронне підвантаження через колонки.  
-5:24 Форми для створення/оновлення замовлень, поля для редагування.  
-5:47 Запуск серверної частини у робочому режимі, запуск мобільного клієнта.  
-6:09 Огляд Android Studio як середовища розробки, запуск емулятора.  
-6:15 Логін і перевірка даних, вхід у систему як адмін, тестування авторизації.  
-6:43 Компоненти Jetpack Compose для побудови UI.  
-7:03 Перегляд сповіщень: ID, телефон, тип, час.  
-7:23 Перехід до сторінки замовлень: перегляд, додавання нового, оновлення статусу.  
-7:52 Оновлення списку після змін, видалення замовлення.  
-8:19 Навігація між екранами, ретроспективний перегляд даних.  
-8:32 Висновок: мобільний клієнт — корисне доповнення до веб-системи.  
-9:11 Переваги архітектури: розділення клієнта і серверної частини.  
-9:27 Лабораторна не вимагала змін у сервері, демонстрація гнучкого розширення.  
-9:50 Можливість додавання нових моделей, розділів, екранів.  
-10:02 Архітектура забезпечує зручну підтримку функціональності.  
-10:05 Завершення демонстрації лабораторної роботи №3. Подяка за перегляд.
+0:00 Представлення студента ПЗПІ-22-1 Головіна Святослава.
+0:05 Демонстрація лабораторної роботи №3 з "Архітектури програмного забезпечення".
+0:12 Завдання: створити веб-частину системи зберігання вакцин.
+0:27 Структура звіту: історія змін, загальні вимоги до веб-додатку.
+0:34 Використання React та архітектури, що легко розширюється.
+0:42 Підтримка ролей: адміністратор, оператор, оператор бази даних.
+0:53 Вибір архітектури MVC для гнучкості та розширюваності.
+1:02 Використані бібліотеки: для інтерфейсів і роботи з формами.
+1:17 Підхід Query/Mutation Separation — стабільність системи.
+1:32 Опис ролей: сенсор, оператор, адміністратор, оператор БД.
+2:12 Функціональність сторінки експорту/імпорту бази даних.
+2:19 Підсумок реалізованого функціоналу у звіті.
+2:47 Запуск серверної частини та пояснення структури.
+3:06 Авторизація: редірект на сторінку логіну.
+3:21 Демонстрація інтерфейсу для ролі оператора.
+3:29 Перегляд і редагування локацій: додавання, зміна, видалення.
+4:02 Управління замовленнями: створення, зміна статусу, видалення.
+4:23 Перегляд історичних сповіщень та сенсорних даних.
+4:35 Вхід як адміністратор: додаткові можливості — управління вакцинами.
+5:01 Додавання, оновлення та видалення вакцини з валідацією.
+5:20 Наявність обов'язкових полів і валідації у всіх формах.
+5:29 Загальна навігація і зручність інтерфейсу.
+5:46 Вхід як голова бази даних — доступ до експорту/імпорту.
+6:10 Експорт бази даних у зашифрованому вигляді.
+6:25 Редагування експортованих даних, помилка, імпорт для відновлення.
+6:42 Успішне відновлення значень — повернення до попереднього стану.
+7:01 Можливість очищення форм і гнучке налаштування таблиць.
+7:44 Генерація звітів по локаціям: перегляд інвентаря і заповненості.
+8:27 Аналіз звіту: перегляд партій вакцин у конкретній локації.
+8:53 Пояснення переваг архітектури для операторів.
+9:01 Завершення демонстрації: веб-частина охоплює весь необхідний функціонал.
+9:14 Підсумок: керування замовленнями, вакцинами, перегляд сповіщень, звіти, експорт/імпорт.
+9:26 Подяка за перегляд.
 ________________
 
 
@@ -168,569 +199,2967 @@ ________________
 
   
 
-Рисунок Б.1 - Use-case діаграма мобільного клієнту
+Рисунок Б.1 — UML-діаграма прецедентів
 
 
   
 
-Рисунок Б.2 - Діаграма станів мобільного клієнту
+Рисунок Б.2 — UML-діаграма компонентів
+  
+
+Рисунок Б.3 — UML-діаграма станів функціоналу імпорту/експорту бази даних
+
+
+  
+
+Рисунок Б.4 — UML-діаграма взаємодії ключових сценаріїв
 ________________
 ДОДАТОК В
 ПРОГРАМНИЙ КОД
 
 
-В.1 Клієнт для вазаємодії з серверною частиною.
-Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab3/pzpi-22-1-holovin-sviatoslav-lab3/mobile/app/src/main/java/com/example/lb3/ApiClient.kt
-  1  package com.example.lb3
-  2  
-  3  import org.json.JSONArray
-  4  import org.json.JSONObject
-  5  import java.io.BufferedReader
-  6  import java.io.OutputStreamWriter
-  7  import java.net.HttpURLConnection
-  8  import java.net.URL
-  9  
- 10  object ApiClient {
- 11      private const val BASE = "http://10.0.2.2:3000"
- 12      var token: String? = null
+В.1 App.tsx.
+Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab3/pzpi-22-1-holovin-sviatoslav-lab3/fe/src/App.tsx
+  1  import { createContext } from "react";
+  2  import { Outlet } from "react-router-dom";
+  3  import { Nav } from "./routes/Nav";
+  4  import Loader from "./components/Loader";
+  5  import SignIn from "./components/SignIn";
+  6  import { useCurrentUserQuery } from "./features/useCurrentUserQuery";
+  7  import { User } from "./types/User";
+  8  
+  9  export const CurrentUserContext = createContext<User>({} as User);
+ 10  
+ 11  const App = () => {
+ 12    const query = useCurrentUserQuery();
  13  
- 14      private fun request(path: String, method: String, body: JSONObject? = null): String? {
- 15          val conn = (URL("$BASE$path").openConnection() as HttpURLConnection).apply {
- 16              requestMethod = method
- 17              connectTimeout = 5000
- 18              readTimeout = 5000
- 19              doInput = true
- 20              token?.let { setRequestProperty("Authorization", "Bearer $it") }
- 21              if (body != null) {
- 22                  doOutput = true
- 23                  setRequestProperty("Content-Type", "application/json")
- 24                  OutputStreamWriter(outputStream).use { it.write(body.toString()) }
- 25              }
- 26          }
- 27          return try {
- 28              BufferedReader(conn.inputStream.reader()).use { it.readText() }
- 29          } catch (_: Exception) { null } finally { conn.disconnect() }
- 30      }
- 31  
- 32      fun login(username: String, password: String): String? {
- 33          val obj = JSONObject().put("username", username).put("password", password)
- 34          val txt = request("/users/login", "POST", obj) ?: return null
- 35          return JSONObject(txt).getString("accessToken")
- 36      }
- 37  
- 38      fun getNotifications(): List<Notification> {
- 39          val txt = request("/notifications", "GET") ?: return emptyList()
- 40          val arr = JSONArray(txt)
- 41          return List(arr.length()) { i ->
- 42              arr.getJSONObject(i).let {
- 43                  Notification(
- 44                      it.getInt("notification_id"),
- 45                      it.getString("phone"),
- 46                      it.getString("sent_at"),
- 47                      it.getString("message"),
- 48                      it.getString("notification_type")
- 49                  )
- 50              }
- 51          }
- 52      }
- 53  
- 54      fun getOrders(): List<Order> {
- 55          val txt = request("/orders", "GET") ?: return emptyList()
- 56          val arr = JSONArray(txt)
- 57          return List(arr.length()) { i ->
- 58              arr.getJSONObject(i).let {
- 59                  Order(
- 60                      it.getInt("order_id"),
- 61                      it.getString("username"),
- 62                      it.getString("order_date"),
- 63                      it.getString("order_status")
- 64                  )
- 65              }
- 66          }
- 67      }
- 68  
- 69      fun getOrder(id: Int): Order? {
- 70          val txt = request("/orders/$id", "GET") ?: return null
- 71          val o = JSONObject(txt)
- 72          return Order(
- 73              o.getInt("order_id"),
- 74              o.getString("username"),
- 75              o.getString("order_date"),
- 76              o.getString("order_status")
- 77          )
- 78      }
- 79  
- 80      fun createOrder(username: String, status: String): Order? {
- 81          val obj = JSONObject()
- 82              .put("username", username)
- 83              .put("order_status", status)
- 84              .put("items", JSONArray())
- 85          val txt = request("/orders", "POST", obj) ?: return null
- 86          val o = JSONObject(txt)
- 87          return Order(
- 88              o.getInt("order_id"),
- 89              o.getString("username"),
- 90              o.getString("order_date"),
- 91              o.getString("order_status")
- 92          )
- 93      }
- 94  
- 95      fun updateOrder(id: Int, status: String): Order? {
- 96          val txt = request(
- 97              "/orders/$id",
- 98              "PATCH",
- 99              JSONObject().put("order_status", status).put("items", JSONArray())
-100          ) ?: return null
-101          val o = JSONObject(txt)
-102          return Order(
-103              o.getInt("order_id"),
-104              o.getString("username"),
-105              o.getString("order_date"),
-106              o.getString("order_status")
-107          )
-108      }
-109  
-110      fun deleteOrder(id: Int) {
-111          request("/orders/$id", "DELETE")
-112      }
-113  }
-
-
-В.2 Головний файл.
-Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab3/pzpi-22-1-holovin-sviatoslav-lab3/mobile/app/src/main/java/com/example/lb3/App.kt
-  1  package com.example.lb3
-  2  
-  3  import androidx.compose.foundation.layout.padding
-  4  import androidx.compose.material3.Scaffold
-  5  import androidx.compose.runtime.Composable
-  6  import androidx.compose.ui.Modifier
-  7  import androidx.navigation.compose.NavHost
-  8  import androidx.navigation.compose.composable
-  9  import androidx.navigation.compose.rememberNavController
- 10  
- 11  @Composable
- 12  fun App(
- 13      hasToken: Boolean,
- 14      saveToken: (String) -> Unit,
- 15      logout: () -> Unit
- 16  ) {
- 17      val nav = rememberNavController()
- 18      Scaffold { padding ->
- 19          NavHost(
- 20              navController = nav,
- 21              startDestination = if (hasToken) "home" else "login",
- 22              modifier = Modifier.padding(padding)
- 23          ) {
- 24              composable("login") { LoginScreen(nav, saveToken) }
- 25              composable("home") { HomeScreen(nav, logout) }
- 26              composable("notifications") { NotificationsScreen(nav) }
- 27              composable("orders") { OrdersListScreen(nav) }
- 28              composable("orderForm/{id}") { back ->
- 29                  val id = back.arguments?.getString("id")?.toInt() ?: 0
- 30                  OrderFormScreen(nav, id)
- 31              }
- 32          }
- 33      }
- 34  }
-
-
-В.3 Головний екран.
-Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab3/pzpi-22-1-holovin-sviatoslav-lab3/mobile/app/src/main/java/com/example/lb3/HomeScreen.kt
-  1  package com.example.lb3
-  2  
-  3  import androidx.compose.foundation.layout.*
-  4  import androidx.compose.material3.Button
-  5  import androidx.compose.material3.Text
-  6  import androidx.compose.runtime.Composable
-  7  import androidx.compose.ui.Alignment
-  8  import androidx.compose.ui.Modifier
-  9  import androidx.compose.ui.unit.dp
- 10  import androidx.navigation.NavController
- 11  
- 12  @Composable
- 13  fun HomeScreen(nav: NavController, logout: () -> Unit) {
- 14      Column(
- 15          Modifier
- 16              .fillMaxSize()
- 17              .padding(24.dp),
- 18          horizontalAlignment = Alignment.CenterHorizontally,
- 19          verticalArrangement = Arrangement.Center
- 20      ) {
- 21          Button(
- 22              onClick = { nav.navigate("notifications") },
- 23              modifier = Modifier.fillMaxWidth()
- 24          ) { Text("Сповіщення") }
- 25  
- 26          Spacer(Modifier.height(16.dp))
- 27  
- 28          Button(
- 29              onClick = { nav.navigate("orders") },
- 30              modifier = Modifier.fillMaxWidth()
- 31          ) { Text("Замовлення") }
- 32  
- 33          Spacer(Modifier.height(32.dp))
- 34  
- 35          Button(
- 36              onClick = {
- 37                  logout()
- 38                  nav.navigate("login") {
- 39                      popUpTo("home") { inclusive = true }
- 40                  }
- 41              },
- 42              modifier = Modifier.fillMaxWidth()
- 43          ) { Text("Вийти") }
- 44      }
- 45  }
-
-
-В.4 Сторінка авторизації.
-Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab3/pzpi-22-1-holovin-sviatoslav-lab3/mobile/app/src/main/java/com/example/lb3/LoginScreen.kt
-  1  package com.example.lb3
-  2  
-  3  import androidx.compose.foundation.layout.*
-  4  import androidx.compose.material3.Button
-  5  import androidx.compose.material3.OutlinedTextField
-  6  import androidx.compose.material3.Text
-  7  import androidx.compose.material3.Scaffold
-  8  import androidx.compose.runtime.*
-  9  import androidx.compose.ui.Modifier
- 10  import androidx.compose.ui.unit.dp
- 11  import androidx.navigation.NavController
- 12  import kotlinx.coroutines.Dispatchers
- 13  import kotlinx.coroutines.launch
- 14  import kotlinx.coroutines.withContext
- 15  
- 16  @Composable
- 17  fun LoginScreen(nav: NavController, saveToken: (String) -> Unit) {
- 18      val scope = rememberCoroutineScope()
- 19      var user by remember { mutableStateOf("") }
- 20      var pass by remember { mutableStateOf("") }
- 21      var error by remember { mutableStateOf("") }
- 22  
- 23      Scaffold { padding ->
- 24          Column(
- 25              Modifier
- 26                  .padding(padding)
- 27                  .fillMaxSize()
- 28                  .padding(32.dp)
- 29          ) {
- 30              OutlinedTextField(
- 31                  value = user,
- 32                  onValueChange = { user = it },
- 33                  label = { Text("Username") },
- 34                  modifier = Modifier.fillMaxWidth()
- 35              )
- 36              Spacer(Modifier.height(8.dp))
- 37              OutlinedTextField(
- 38                  value = pass,
- 39                  onValueChange = { pass = it },
- 40                  label = { Text("Password") },
- 41                  modifier = Modifier.fillMaxWidth()
- 42              )
- 43              Spacer(Modifier.height(16.dp))
- 44              Button(
- 45                  onClick = {
- 46                      error = ""
- 47                      scope.launch {
- 48                          val token = withContext(Dispatchers.IO) {
- 49                              ApiClient.login(user.trim(), pass.trim())
- 50                          }
- 51                          if (token == null) {
- 52                              error = "Невірні дані"
- 53                          } else {
- 54                              saveToken(token)
- 55                              nav.navigate("home") {
- 56                                  popUpTo("login") { inclusive = true }
- 57                              }
- 58                          }
- 59                      }
- 60                  },
- 61                  modifier = Modifier.fillMaxWidth()
- 62              ) { Text("Увійти") }
- 63              if (error.isNotEmpty()) {
- 64                  Spacer(Modifier.height(8.dp))
- 65                  Text(error)
- 66              }
- 67          }
- 68      }
- 69  }
-
-
-В.5 Корневий файл.
-Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab3/pzpi-22-1-holovin-sviatoslav-lab3/mobile/app/src/main/java/com/example/lb3/MainActivity.kt
-  1  package com.example.lb3
-  2  
-  3  import android.content.Context
-  4  import android.os.Bundle
-  5  import androidx.activity.ComponentActivity
-  6  import androidx.activity.compose.setContent
-  7  import androidx.activity.enableEdgeToEdge
-  8  import androidx.compose.runtime.*
-  9  import com.example.lb3.ui.theme.Lb3Theme
- 10  
- 11  class MainActivity : ComponentActivity() {
- 12      override fun onCreate(savedInstanceState: Bundle?) {
- 13          super.onCreate(savedInstanceState)
- 14          val prefs = getSharedPreferences("auth", Context.MODE_PRIVATE)
- 15          ApiClient.token = prefs.getString("jwt", null)
- 16          enableEdgeToEdge()
- 17          setContent {
- 18              val tokenState = remember { mutableStateOf(ApiClient.token) }
- 19              Lb3Theme {
- 20                  App(
- 21                      hasToken = tokenState.value != null,
- 22                      saveToken = { t ->
- 23                          ApiClient.token = t
- 24                          prefs.edit().putString("jwt", t).apply()
- 25                          tokenState.value = t
- 26                      },
- 27                      logout = {
- 28                          ApiClient.token = null
- 29                          prefs.edit().remove("jwt").apply()
- 30                          tokenState.value = null
- 31                      }
- 32                  )
- 33              }
- 34          }
- 35      }
- 36  }
-
-
-В.6 Модель повідомлення.
-Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab3/pzpi-22-1-holovin-sviatoslav-lab3/mobile/app/src/main/java/com/example/lb3/Notification.kt
-  1  package com.example.lb3
-  2  
-  3  data class Notification(
-  4      val notification_id: Int,
-  5      val phone: String,
-  6      val sent_at: String,
-  7      val message: String,
-  8      val notification_type: String
-  9  )
-
-
-В.7 Список повідомлень
-Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab3/pzpi-22-1-holovin-sviatoslav-lab3/mobile/app/src/main/java/com/example/lb3/NotificationScreen.kt
-  1  package com.example.lb3
-  2  
-  3  import androidx.compose.foundation.layout.*
-  4  import androidx.compose.foundation.lazy.LazyColumn
-  5  import androidx.compose.foundation.lazy.items
-  6  import androidx.compose.material3.Divider
-  7  import androidx.compose.material3.Text
-  8  import androidx.compose.runtime.*
-  9  import androidx.compose.ui.Modifier
- 10  import androidx.compose.ui.unit.dp
- 11  import androidx.lifecycle.compose.LifecycleResumeEffect
- 12  import androidx.navigation.NavController
- 13  import kotlinx.coroutines.Dispatchers
- 14  import kotlinx.coroutines.launch
- 15  import kotlinx.coroutines.withContext
- 16  
- 17  @Composable
- 18  fun NotificationsScreen(nav: NavController) {
- 19      val scope = rememberCoroutineScope()
- 20      var list by remember { mutableStateOf(listOf<Notification>()) }
- 21  
- 22      fun load() = scope.launch {
- 23          list = withContext(Dispatchers.IO) { ApiClient.getNotifications() }
- 24      }
- 25  
- 26      LifecycleResumeEffect(Unit) { load(); onPauseOrDispose { } }
- 27  
- 28      Column(Modifier.fillMaxSize().padding(16.dp)) {
- 29          Text("Усі сповіщення", Modifier.padding(bottom = 8.dp))
- 30          Row(Modifier.fillMaxWidth()) {
- 31              Text("ID", Modifier.weight(0.1f))
- 32              Text("Телефон", Modifier.weight(0.3f))
- 33              Text("Тип", Modifier.weight(0.2f))
- 34              Text("Час", Modifier.weight(0.4f))
- 35          }
- 36          Divider()
- 37          LazyColumn {
- 38              items(list) { n ->
- 39                  Row(Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
- 40                      Text(n.notification_id.toString(), Modifier.weight(0.1f))
- 41                      Text(n.phone, Modifier.weight(0.3f))
- 42                      Text(n.notification_type, Modifier.weight(0.2f))
- 43                      Text(n.sent_at, Modifier.weight(0.4f))
- 44                  }
- 45                  Divider()
- 46              }
- 47          }
- 48      }
- 49  }
-
-
-В.8 Модель замовлення.
-Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab3/pzpi-22-1-holovin-sviatoslav-lab3/mobile/app/src/main/java/com/example/lb3/Order.kt
-  1  package com.example.lb3
-  2  
-  3  data class Order(
-  4      val order_id: Int,
-  5      val username: String,
-  6      val order_date: String,
-  7      val order_status: String
-  8  )
-
-
-В.9 Сторінка редагування замовлення.
-Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab3/pzpi-22-1-holovin-sviatoslav-lab3/mobile/app/src/main/java/com/example/lb3/OrderFormScreen.kt
-  1  package com.example.lb3
-  2  
-  3  import androidx.compose.foundation.layout.*
-  4  import androidx.compose.material3.Button
-  5  import androidx.compose.material3.OutlinedTextField
-  6  import androidx.compose.material3.Text
-  7  import androidx.compose.material3.Scaffold
-  8  import androidx.compose.runtime.*
-  9  import androidx.compose.ui.Modifier
- 10  import androidx.compose.ui.unit.dp
- 11  import androidx.lifecycle.compose.LifecycleResumeEffect
- 12  import androidx.navigation.NavController
- 13  import kotlinx.coroutines.Dispatchers
- 14  import kotlinx.coroutines.launch
- 15  import kotlinx.coroutines.withContext
- 16  
- 17  @Composable
- 18  fun OrderFormScreen(nav: NavController, orderId: Int) {
- 19      val scope = rememberCoroutineScope()
- 20      var username by remember { mutableStateOf("") }
- 21      var status   by remember { mutableStateOf("") }
- 22      var isNew    by remember { mutableStateOf(orderId == 0) }
- 23  
- 24      fun load() = scope.launch {
- 25          if (!isNew) {
- 26              ApiClient.getOrder(orderId)?.let {
- 27                  username = it.username
- 28                  status   = it.order_status
- 29              }
- 30          }
- 31      }
- 32  
- 33      LifecycleResumeEffect(Unit) { load(); onPauseOrDispose { } }
- 34  
- 35      Scaffold { padding ->
- 36          Column(
- 37              Modifier
- 38                  .padding(padding)
- 39                  .fillMaxSize()
- 40                  .padding(16.dp)
- 41          ) {
- 42              OutlinedTextField(
- 43                  value = username,
- 44                  onValueChange = { username = it },
- 45                  label = { Text("Користувач") },
- 46                  modifier = Modifier.fillMaxWidth(),
- 47                  enabled = isNew
- 48              )
- 49              Spacer(Modifier.height(8.dp))
- 50              OutlinedTextField(
- 51                  value = status,
- 52                  onValueChange = { status = it },
- 53                  label = { Text("Статус") },
- 54                  modifier = Modifier.fillMaxWidth()
- 55              )
- 56              Spacer(Modifier.height(16.dp))
- 57              Row {
- 58                  Button(
- 59                      onClick = {
- 60                          scope.launch(Dispatchers.IO) {
- 61                              if (isNew) {
- 62                                  ApiClient.createOrder(username.trim(), status.trim())
- 63                              } else {
- 64                                  ApiClient.updateOrder(orderId, status.trim())
- 65                              }
- 66                              withContext(Dispatchers.Main) { nav.popBackStack() }
- 67                          }
- 68                      },
- 69                      modifier = Modifier.weight(1f)
- 70                  ) {
- 71                      Text(if (isNew) "Створити" else "Зберегти")
- 72                  }
- 73                  if (!isNew) {
- 74                      Spacer(Modifier.width(8.dp))
- 75                      Button(
- 76                          onClick = {
- 77                              scope.launch(Dispatchers.IO) {
- 78                                  ApiClient.deleteOrder(orderId)
- 79                                  withContext(Dispatchers.Main) { nav.popBackStack() }
- 80                              }
- 81                          },
- 82                          modifier = Modifier.weight(1f)
- 83                      ) { Text("Видалити") }
- 84                  }
- 85              }
- 86          }
- 87      }
- 88  }
-
-
-В.10 Список замовлень
-Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab3/pzpi-22-1-holovin-sviatoslav-lab3/mobile/app/src/main/java/com/example/lb3/OrdersListScreen.kt
-  1  package com.example.lb3
-  2  
-  3  import androidx.compose.foundation.clickable
-  4  import androidx.compose.foundation.layout.*
-  5  import androidx.compose.foundation.lazy.LazyColumn
-  6  import androidx.compose.foundation.lazy.items
-  7  import androidx.compose.material3.Divider
-  8  import androidx.compose.material3.FloatingActionButton
-  9  import androidx.compose.material3.Text
- 10  import androidx.compose.material3.Scaffold
- 11  import androidx.compose.runtime.*
- 12  import androidx.compose.ui.Modifier
- 13  import androidx.compose.ui.unit.dp
- 14  import androidx.lifecycle.compose.LifecycleResumeEffect
- 15  import androidx.navigation.NavController
- 16  import kotlinx.coroutines.Dispatchers
- 17  import kotlinx.coroutines.launch
- 18  import kotlinx.coroutines.withContext
- 19  
- 20  @Composable
- 21  fun OrdersListScreen(nav: NavController) {
- 22      val scope = rememberCoroutineScope()
- 23      var orders by remember { mutableStateOf(listOf<Order>()) }
- 24  
- 25      fun load() = scope.launch {
- 26          orders = withContext(Dispatchers.IO) { ApiClient.getOrders() }
- 27      }
+ 14    if (query.isLoading) {
+ 15      return <Loader />;
+ 16    }
+ 17    if (!query.data) {
+ 18      return <SignIn />;
+ 19    }
+ 20  
+ 21    return (
+ 22      <CurrentUserContext.Provider value={query.data}>
+ 23        <Nav />
+ 24        <Outlet />
+ 25      </CurrentUserContext.Provider>
+ 26    );
+ 27  };
  28  
- 29      LifecycleResumeEffect(Unit) { load(); onPauseOrDispose { } }
+ 29  export default App;
+
+
+В.2 Router.tsx.
+Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab3/pzpi-22-1-holovin-sviatoslav-lab3/fe/src/Router.tsx
+  1  import { QueryClient, QueryClientProvider } from "react-query";
+  2  import {
+  3    BrowserRouter,
+  4    Navigate,
+  5    Outlet,
+  6    Route,
+  7    Routes,
+  8  } from "react-router-dom";
+  9  import App from "./App";
+ 10  import ACLWrapper from "./components/ACLWrapper";
+ 11  import Home from "./components/Home";
+ 12  import { DBMutate } from "./routes/DBMutate";
+ 13  import LocationMutate from "./routes/LocationMutate";
+ 14  import { LocationSearch } from "./routes/LocationSearch";
+ 15  import { NotificationSearch } from "./routes/NotificationSearch";
+ 16  import { OrderMutate } from "./routes/OrderMutate";
+ 17  import { OrderSearch } from "./routes/OrderSearch";
+ 18  import { ReportDetails } from "./routes/ReportDetails";
+ 19  import { SensorDataSearch } from "./routes/SensorDataSearch";
+ 20  import VaccineMutate from "./routes/VaccineMutate";
+ 21  import { VaccineSearch } from "./routes/VaccineSearch";
+ 22  import { ACL } from "./utils/ACL";
+ 23  
+ 24  const queryClient = new QueryClient({
+ 25    defaultOptions: {
+ 26      queries: {
+ 27        refetchOnWindowFocus: false,
+ 28        retry: 0,
+ 29      },
+ 30    },
+ 31  });
+ 32  
+ 33  const Router = () => {
+ 34    return (
+ 35      <QueryClientProvider client={queryClient}>
+ 36        <BrowserRouter>
+ 37          <Routes>
+ 38            <Route path="/" element={<App />}>
+ 39              <Route index element={<Home />} />
+ 40              <Route path="*" element={<>Сторінку не знайдено</>} />
+ 41  
+ 42              <Route
+ 43                path="locations"
+ 44                element={
+ 45                  <ACLWrapper fallback={<Navigate to="/" />} {...ACL.locations}>
+ 46                    <Outlet />
+ 47                  </ACLWrapper>
+ 48                }
+ 49              >
+ 50                <Route index element={<LocationSearch />} />
+ 51                <Route path="create" element={<LocationMutate />} />
+ 52                <Route path="update/:id" element={<LocationMutate />} />
+ 53  
+ 54                <Route path="report/:id" element={<ReportDetails />} />
+ 55              </Route>
+ 56  
+ 57              <Route
+ 58                path="vaccines"
+ 59                element={
+ 60                  <ACLWrapper fallback={<Navigate to="/" />} {...ACL.vaccines}>
+ 61                    <Outlet />
+ 62                  </ACLWrapper>
+ 63                }
+ 64              >
+ 65                <Route index element={<VaccineSearch />} />
+ 66                <Route path="create" element={<VaccineMutate />} />
+ 67                <Route path="update/:id" element={<VaccineMutate />} />
+ 68              </Route>
+ 69  
+ 70              <Route
+ 71                path="orders"
+ 72                element={
+ 73                  <ACLWrapper fallback={<Navigate to="/" />} {...ACL.orders}>
+ 74                    <Outlet />
+ 75                  </ACLWrapper>
+ 76                }
+ 77              >
+ 78                <Route index element={<OrderSearch />} />
+ 79                <Route path="create" element={<OrderMutate />} />
+ 80                <Route path="update/:id" element={<OrderMutate />} />
+ 81              </Route>
+ 82  
+ 83              <Route
+ 84                path="notifications"
+ 85                element={
+ 86                  <ACLWrapper
+ 87                    fallback={<Navigate to="/" />}
+ 88                    {...ACL.notifications}
+ 89                  >
+ 90                    <Outlet />
+ 91                  </ACLWrapper>
+ 92                }
+ 93              >
+ 94                <Route index element={<NotificationSearch />} />
+ 95              </Route>
+ 96  
+ 97              <Route
+ 98                path="backup"
+ 99                element={
+100                  <ACLWrapper fallback={<Navigate to="/" />} {...ACL.backup}>
+101                    <Outlet />
+102                  </ACLWrapper>
+103                }
+104              >
+105                <Route index element={<DBMutate />} />
+106              </Route>
+107  
+108              <Route
+109                path="sensor-data"
+110                element={
+111                  <ACLWrapper fallback={<Navigate to="/" />} {...ACL.sensorData}>
+112                    <Outlet />
+113                  </ACLWrapper>
+114                }
+115              >
+116                <Route index element={<SensorDataSearch />} />
+117              </Route>
+118            </Route>
+119          </Routes>
+120        </BrowserRouter>
+121      </QueryClientProvider>
+122    );
+123  };
+124  
+125  export default Router;
+
+
+В.3 ACLWrapper.tsx.
+Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab3/pzpi-22-1-holovin-sviatoslav-lab3/fe/src/components/ACLWrapper.tsx
+  1  import { ReactNode, useContext } from "react";
+  2  import { CurrentUserContext } from "../App";
+  3  import { UserRole } from "../types/User";
+  4  
+  5  const ACLWrapper = ({
+  6    allowedRoles,
+  7    fallback,
+  8    children,
+  9  }: {
+ 10    allowedRoles: UserRole[];
+ 11    fallback: ReactNode;
+ 12    children: ReactNode;
+ 13  }) => {
+ 14    const user = useContext(CurrentUserContext);
+ 15  
+ 16    if (!user.role || !allowedRoles.includes(user.role)) {
+ 17      return fallback;
+ 18    }
+ 19  
+ 20    return children;
+ 21  };
+ 22  
+ 23  export default ACLWrapper;
+
+
+В.4 Home.tsx.
+Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab3/pzpi-22-1-holovin-sviatoslav-lab3/fe/src/components/Home.tsx
+  1  import { useContext } from "react";
+  2  
+  3  import { CurrentUserContext } from "../App";
+  4  
+  5  const Home = () => {
+  6    const user = useContext(CurrentUserContext);
+  7  
+  8    return (
+  9      <div>
+ 10        Вітаємо, <b>{user.username}</b>! Оберіть сторінку для перегляду в меню
+ 11        зверху ^
+ 12      </div>
+ 13    );
+ 14  };
+ 15  
+ 16  export default Home;
+
+
+В.5 Loader.tsx.
+Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab3/pzpi-22-1-holovin-sviatoslav-lab3/fe/src/components/Loader.tsx
+  1  import { CircularProgress } from "@mui/material";
+  2  
+  3  const Loader = () => {
+  4    return (
+  5      <div
+  6        style={{
+  7          display: "flex",
+  8          justifyContent: "center",
+  9          alignItems: "center",
+ 10          height: "calc(100vh - 16px - 35px)",
+ 11        }}
+ 12      >
+ 13        <CircularProgress />
+ 14      </div>
+ 15    );
+ 16  };
+ 17  
+ 18  export default Loader;
+
+
+В.6 SignIn.tsx.
+Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab3/pzpi-22-1-holovin-sviatoslav-lab3/fe/src/components/SignIn.tsx
+  1  import { Button, FormControl, TextField } from "@mui/material";
+  2  import { useState } from "react";
+  3  import { Controller, useForm } from "react-hook-form";
+  4  import { useLoginMutation } from "../features/useLoginMutation";
+  5  import { Login } from "../types/Login";
+  6  
+  7  import { yupResolver } from "@hookform/resolvers/yup";
+  8  import * as yup from "yup";
+  9  
+ 10  const schema = yup.object({
+ 11    username: yup.string().required("Заповніть поле"),
+ 12    password: yup.string().required("Заповніть поле"),
+ 13  });
+ 14  
+ 15  const SignIn = () => {
+ 16    const [error, setError] = useState<string>("");
+ 17  
+ 18    const login = useLoginMutation();
+ 19  
+ 20    const form = useForm<Login>({
+ 21      resolver: yupResolver(schema),
+ 22      mode: "onSubmit",
+ 23      defaultValues: {
+ 24        username: "",
+ 25        password: "",
+ 26      },
+ 27      values: undefined,
+ 28      resetOptions: { keepDefaultValues: true },
+ 29    });
  30  
- 31      Scaffold(
- 32          floatingActionButton = {
- 33              FloatingActionButton(onClick = { nav.navigate("orderForm/0") }) { Text("+") }
- 34          }
- 35      ) { padding ->
- 36          Column(
- 37              Modifier
- 38                  .padding(padding)
- 39                  .fillMaxSize()
- 40                  .padding(16.dp)
- 41          ) {
- 42              Text("Замовлення", Modifier.padding(bottom = 8.dp))
- 43              Row(Modifier.fillMaxWidth()) {
- 44                  Text("ID", Modifier.weight(0.15f))
- 45                  Text("User", Modifier.weight(0.35f))
- 46                  Text("Статус", Modifier.weight(0.5f))
- 47              }
- 48              Divider()
- 49              LazyColumn {
- 50                  items(orders) { o ->
- 51                      Row(
- 52                          Modifier
- 53                              .fillMaxWidth()
- 54                              .clickable { nav.navigate("orderForm/${o.order_id}") }
- 55                              .padding(vertical = 6.dp)
- 56                      ) {
- 57                          Text(o.order_id.toString(), Modifier.weight(0.15f))
- 58                          Text(o.username, Modifier.weight(0.35f))
- 59                          Text(o.order_status, Modifier.weight(0.5f))
- 60                      }
- 61                      Divider()
- 62                  }
- 63              }
- 64          }
- 65      }
- 66  }
+ 31    const handleCreate = form.handleSubmit((data) => {
+ 32      setError("");
+ 33  
+ 34      login.mutateAsync(data).catch((err) => {
+ 35        setError(err.message);
+ 36      });
+ 37    });
+ 38    const handleReset = () => {
+ 39      setError("");
+ 40      form.reset();
+ 41    };
+ 42  
+ 43    return (
+ 44      <>
+ 45        <div
+ 46          style={{
+ 47            paddingInline: 10,
+ 48          }}
+ 49        >
+ 50          <div
+ 51            style={{
+ 52              display: "flex",
+ 53              justifyContent: "space-between",
+ 54              alignItems: "center",
+ 55            }}
+ 56          >
+ 57            <h4
+ 58              style={{
+ 59                textTransform: "uppercase",
+ 60                fontWeight: "bold",
+ 61                marginBlock: 30,
+ 62              }}
+ 63            >
+ 64              Увійти в систему
+ 65            </h4>
+ 66          </div>
+ 67  
+ 68          <div
+ 69            style={{
+ 70              color: "red",
+ 71              paddingBottom: 10,
+ 72            }}
+ 73          >
+ 74            {error && <>Щось пішло не так: {error}</>}
+ 75          </div>
+ 76  
+ 77          <div
+ 78            style={{
+ 79              marginBottom: 20,
+ 80              padding: 10,
+ 81              border: "1px solid #ccc",
+ 82              borderRadius: 5,
+ 83            }}
+ 84          >
+ 85            <form
+ 86              style={{
+ 87                display: "flex",
+ 88                flexDirection: "column",
+ 89                justifyContent: "space-between",
+ 90                alignItems: "center",
+ 91                flexWrap: "wrap",
+ 92              }}
+ 93            >
+ 94              <Controller
+ 95                name="username"
+ 96                control={form.control}
+ 97                render={({ field, fieldState }) => (
+ 98                  <FormControl
+ 99                    size="small"
+100                    fullWidth
+101                    sx={{ m: 1, minWidth: 120, maxWidth: "95%" }}
+102                  >
+103                    <TextField
+104                      label="Логін"
+105                      placeholder="user_1"
+106                      onChange={field.onChange}
+107                      value={field.value}
+108                      type="search"
+109                      size="small"
+110                      required
+111                      error={!!fieldState.error}
+112                      helperText={fieldState.error?.message}
+113                    />
+114                  </FormControl>
+115                )}
+116              />
+117  
+118              <Controller
+119                name="password"
+120                control={form.control}
+121                render={({ field, fieldState }) => (
+122                  <FormControl
+123                    size="small"
+124                    fullWidth
+125                    sx={{ m: 1, minWidth: 120, maxWidth: "95%" }}
+126                  >
+127                    <TextField
+128                      label="Пароль"
+129                      onChange={field.onChange}
+130                      value={field.value}
+131                      size="small"
+132                      required
+133                      type="password"
+134                      error={!!fieldState.error}
+135                      helperText={fieldState.error?.message}
+136                    />
+137                  </FormControl>
+138                )}
+139              />
+140            </form>
+141  
+142            <div
+143              style={{ width: "100%", display: "flex", justifyContent: "center" }}
+144            >
+145              <Button
+146                onClick={handleCreate}
+147                variant="contained"
+148                sx={{ m: 1, minWidth: 80 }}
+149              >
+150                Увійти
+151              </Button>
+152              <Button
+153                onClick={handleReset}
+154                variant="contained"
+155                color="error"
+156                sx={{ m: 1, minWidth: 80 }}
+157              >
+158                Очистити
+159              </Button>
+160            </div>
+161          </div>
+162        </div>
+163      </>
+164    );
+165  };
+166  
+167  export default SignIn;
+
+
+В.7 useCurrentUserQuery.ts.
+Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab3/pzpi-22-1-holovin-sviatoslav-lab3/fe/src/features/useCurrentUserQuery.ts
+  1  import { useQuery, useQueryClient } from "react-query";
+  2  import { fetchAbstract } from "../utils/fetchAbstract";
+  3  import { User, UserRole } from "../types/User";
+  4  import { toEnum } from "../utils/toEnum";
+  5  
+  6  export const CURRENT_USER_QUERY_KEY = "me";
+  7  
+  8  export const useCurrentUserQuery = () => {
+  9    const queryClient = useQueryClient();
+ 10  
+ 11    return useQuery({
+ 12      queryKey: [CURRENT_USER_QUERY_KEY],
+ 13      queryFn: async () => {
+ 14        const user = (await fetchAbstract(
+ 15          { queryClient },
+ 16          {
+ 17            preventUnauthorizedReset: true,
+ 18          },
+ 19          "users/me",
+ 20          "GET",
+ 21        )) as User;
+ 22  
+ 23        return {
+ 24          ...user,
+ 25          role: toEnum(user.role ?? "", UserRole) || null,
+ 26        } as User;
+ 27      },
+ 28    });
+ 29  };
+
+
+В.8 useDBExportMutation.ts.
+Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab3/pzpi-22-1-holovin-sviatoslav-lab3/fe/src/features/useDBExportMutation.ts
+  1  import { useMutation, useQueryClient } from "react-query";
+  2  
+  3  import { fetchAbstract } from "../utils/fetchAbstract";
+  4  
+  5  export const useDBExportMutation = () => {
+  6    const queryClient = useQueryClient();
+  7  
+  8    return useMutation(async (data: { password: string }) => {
+  9      return (await fetchAbstract(
+ 10        { queryClient },
+ 11        {},
+ 12        `backup/export`,
+ 13        "POST",
+ 14        data,
+ 15      )) as { db: string };
+ 16    });
+ 17  };
+
+
+В.9 useDBImportMutation.ts.
+Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab3/pzpi-22-1-holovin-sviatoslav-lab3/fe/src/features/useDBImportMutation.ts
+  1  import { useMutation, useQueryClient } from "react-query";
+  2  
+  3  import { fetchAbstract } from "../utils/fetchAbstract";
+  4  
+  5  export const useDBImportMutation = () => {
+  6    const queryClient = useQueryClient();
+  7  
+  8    return useMutation(async (data: { data: string; password: string }) => {
+  9      return (await fetchAbstract(
+ 10        { queryClient },
+ 11        {},
+ 12        `backup/import`,
+ 13        "POST",
+ 14        data,
+ 15      )) as { db: string };
+ 16    });
+ 17  };
+
+
+В.10 useLocationMutation.ts.
+Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab3/pzpi-22-1-holovin-sviatoslav-lab3/fe/src/features/useLocationMutation.ts
+  1  import { useMutation, useQueryClient } from "react-query";
+  2  
+  3  import { Location } from "../types/Location";
+  4  import { fetchAbstract } from "../utils/fetchAbstract";
+  5  import { typeToMethod } from "../utils/typeToMethod";
+  6  
+  7  export const useLocationMutation = () => {
+  8    const queryClient = useQueryClient();
+  9  
+ 10    return useMutation(
+ 11      async ({
+ 12        type,
+ 13        data,
+ 14      }:
+ 15        | { type: "create" | "update"; data: Location }
+ 16        | { type: "delete"; data: { location_id: string } }) => {
+ 17        return (await fetchAbstract(
+ 18          { queryClient },
+ 19          {},
+ 20          `locations${type !== "create" ? `/${data.location_id}` : ""}`,
+ 21          typeToMethod[type],
+ 22          data,
+ 23        )) as Location;
+ 24      },
+ 25      {
+ 26        onSuccess: () => {
+ 27          queryClient.resetQueries("location");
+ 28        },
+ 29      },
+ 30    );
+ 31  };
+
+
+В.11 useLocationQuery.ts.
+Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab3/pzpi-22-1-holovin-sviatoslav-lab3/fe/src/features/useLocationQuery.ts
+  1  import { useQuery, useQueryClient } from "react-query";
+  2  import { Location } from "../types/Location";
+  3  import { fetchAbstract } from "../utils/fetchAbstract";
+  4  
+  5  export const useLocationQuery = (id?: string) => {
+  6    const queryClient = useQueryClient();
+  7  
+  8    return useQuery({
+  9      queryKey: ["location", id],
+ 10      queryFn: async () => {
+ 11        const data = (await fetchAbstract(
+ 12          { queryClient },
+ 13          {},
+ 14          `locations${id ? `/${id}` : ""}`,
+ 15          "GET",
+ 16        )) as Location[] | Location;
+ 17  
+ 18        return Array.isArray(data) ? data : [data];
+ 19      },
+ 20    });
+ 21  };
+
+
+В.12 useLoginMutation.ts.
+Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab3/pzpi-22-1-holovin-sviatoslav-lab3/fe/src/features/useLoginMutation.ts
+  1  import { useMutation, useQueryClient } from "react-query";
+  2  
+  3  import { Login } from "../types/Login";
+  4  import { fetchAbstract } from "../utils/fetchAbstract";
+  5  import { CURRENT_USER_QUERY_KEY } from "./useCurrentUserQuery";
+  6  
+  7  export const useLoginMutation = () => {
+  8    const queryClient = useQueryClient();
+  9  
+ 10    return useMutation(
+ 11      async (data: Login) => {
+ 12        const jwt = (
+ 13          await fetchAbstract({ queryClient }, {}, "users/login", "POST", data)
+ 14        ).accessToken;
+ 15        localStorage.setItem("jwt", jwt);
+ 16        return null;
+ 17      },
+ 18      {
+ 19        onSuccess: () => {
+ 20          queryClient.resetQueries(CURRENT_USER_QUERY_KEY);
+ 21        },
+ 22      },
+ 23    );
+ 24  };
+
+
+В.13 useNotificationQuery.ts.
+Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab3/pzpi-22-1-holovin-sviatoslav-lab3/fe/src/features/useNotificationQuery.ts
+  1  import { useQuery, useQueryClient } from "react-query";
+  2  import { Notification } from "../types/Notification";
+  3  import { fetchAbstract } from "../utils/fetchAbstract";
+  4  
+  5  export const useNotificationQuery = (id?: string) => {
+  6    const queryClient = useQueryClient();
+  7  
+  8    return useQuery({
+  9      queryKey: ["notification", id],
+ 10      queryFn: async () => {
+ 11        const data = (await fetchAbstract(
+ 12          { queryClient },
+ 13          {},
+ 14          `notifications${id ? `/${id}` : ""}`,
+ 15          "GET",
+ 16        )) as Notification[] | Notification;
+ 17  
+ 18        return Array.isArray(data) ? data : [data];
+ 19      },
+ 20    });
+ 21  };
+
+
+В.14 useOrderMutation.ts.
+Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab3/pzpi-22-1-holovin-sviatoslav-lab3/fe/src/features/useOrderMutation.ts
+  1  import { useMutation, useQueryClient } from "react-query";
+  2  
+  3  import { fetchAbstract } from "../utils/fetchAbstract";
+  4  import { typeToMethod } from "../utils/typeToMethod";
+  5  import { Order } from "../types/Order";
+  6  
+  7  export const useOrderMutation = () => {
+  8    const queryClient = useQueryClient();
+  9  
+ 10    return useMutation(
+ 11      async ({
+ 12        type,
+ 13        data,
+ 14      }:
+ 15        | { type: "create" | "update"; data: Order }
+ 16        | { type: "delete"; data: { order_id: string } }) => {
+ 17        return (await fetchAbstract(
+ 18          { queryClient },
+ 19          {},
+ 20          `orders${type !== "create" ? `/${data.order_id}` : ""}`,
+ 21          typeToMethod[type],
+ 22          data,
+ 23        )) as Order;
+ 24      },
+ 25      {
+ 26        onSuccess: () => {
+ 27          queryClient.resetQueries("order");
+ 28        },
+ 29      },
+ 30    );
+ 31  };
+
+
+В.15 useOrderQuery.ts.
+Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab3/pzpi-22-1-holovin-sviatoslav-lab3/fe/src/features/useOrderQuery.ts
+  1  import { useQuery, useQueryClient } from "react-query";
+  2  import { Order } from "../types/Order";
+  3  import { fetchAbstract } from "../utils/fetchAbstract";
+  4  
+  5  export const useOrderQuery = (id?: string) => {
+  6    const queryClient = useQueryClient();
+  7  
+  8    return useQuery({
+  9      queryKey: ["order", id],
+ 10      queryFn: async () => {
+ 11        const data = (await fetchAbstract(
+ 12          { queryClient },
+ 13          {},
+ 14          `orders${id ? `/${id}` : ""}`,
+ 15          "GET",
+ 16        )) as Order[] | Order;
+ 17  
+ 18        return Array.isArray(data) ? data : [data];
+ 19      },
+ 20    });
+ 21  };
+
+
+В.16 useReportQuery.ts.
+Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab3/pzpi-22-1-holovin-sviatoslav-lab3/fe/src/features/useReportQuery.ts
+  1  import { useQuery, useQueryClient } from "react-query";
+  2  import { Report } from "../types/Report";
+  3  import { fetchAbstract } from "../utils/fetchAbstract";
+  4  
+  5  export const useReportQuery = (id: string) => {
+  6    const queryClient = useQueryClient();
+  7  
+  8    return useQuery({
+  9      queryKey: ["report", id],
+ 10      queryFn: async () => {
+ 11        const data = (await fetchAbstract(
+ 12          { queryClient },
+ 13          {},
+ 14          `locations/${id}/report`,
+ 15          "GET",
+ 16        )) as Report;
+ 17  
+ 18        return data;
+ 19      },
+ 20    });
+ 21  };
+
+
+В.17 useSensorDataQuery.ts.
+Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab3/pzpi-22-1-holovin-sviatoslav-lab3/fe/src/features/useSensorDataQuery.ts
+  1  import { useQuery, useQueryClient } from "react-query";
+  2  import { SensorData } from "../types/SensorData";
+  3  import { fetchAbstract } from "../utils/fetchAbstract";
+  4  
+  5  export const useSensorDataQuery = (id?: string) => {
+  6    const queryClient = useQueryClient();
+  7  
+  8    return useQuery({
+  9      queryKey: ["sensor_data", id],
+ 10      queryFn: async () => {
+ 11        const data = (await fetchAbstract(
+ 12          { queryClient },
+ 13          {},
+ 14          `sensorData${id ? `/${id}` : ""}`,
+ 15          "GET",
+ 16        )) as SensorData[] | SensorData;
+ 17  
+ 18        return Array.isArray(data) ? data : [data];
+ 19      },
+ 20    });
+ 21  };
+
+
+В.18 useVaccineMutation.ts.
+Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab3/pzpi-22-1-holovin-sviatoslav-lab3/fe/src/features/useVaccineMutation.ts
+  1  import { useMutation, useQueryClient } from "react-query";
+  2  
+  3  import { Vaccine } from "../types/Vaccine";
+  4  import { fetchAbstract } from "../utils/fetchAbstract";
+  5  import { typeToMethod } from "../utils/typeToMethod";
+  6  
+  7  export const useVaccineMutation = () => {
+  8    const queryClient = useQueryClient();
+  9  
+ 10    return useMutation(
+ 11      async ({
+ 12        type,
+ 13        data,
+ 14      }:
+ 15        | { type: "create" | "update"; data: Vaccine }
+ 16        | { type: "delete"; data: { vaccine_id: string } }) => {
+ 17        return (await fetchAbstract(
+ 18          { queryClient },
+ 19          {},
+ 20          `vaccines${type !== "create" ? `/${data.vaccine_id}` : ""}`,
+ 21          typeToMethod[type],
+ 22          data,
+ 23        )) as Vaccine;
+ 24      },
+ 25      {
+ 26        onSuccess: () => {
+ 27          queryClient.resetQueries("vaccine");
+ 28        },
+ 29      },
+ 30    );
+ 31  };
+
+
+В.19 useVaccineQuery.ts.
+Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab3/pzpi-22-1-holovin-sviatoslav-lab3/fe/src/features/useVaccineQuery.ts
+  1  import { useQuery, useQueryClient } from "react-query";
+  2  import { Vaccine } from "../types/Vaccine";
+  3  import { fetchAbstract } from "../utils/fetchAbstract";
+  4  
+  5  export const useVaccineQuery = (id?: string) => {
+  6    const queryClient = useQueryClient();
+  7  
+  8    return useQuery({
+  9      queryKey: ["vaccine", id],
+ 10      queryFn: async () => {
+ 11        const data = (await fetchAbstract(
+ 12          { queryClient },
+ 13          {},
+ 14          `vaccines${id ? `/${id}` : ""}`,
+ 15          "GET",
+ 16        )) as Vaccine[] | Vaccine;
+ 17  
+ 18        return Array.isArray(data) ? data : [data];
+ 19      },
+ 20    });
+ 21  };
+
+
+В.20 index.css.
+Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab3/pzpi-22-1-holovin-sviatoslav-lab3/fe/src/index.css
+  1  @media print {
+  2    @page {
+  3      size: 250mm 200mm;
+  4    }
+  5  
+  6    .print {
+  7      margin: 10mm 10mm 10mm 15mm;
+  8    }
+  9  }
+ 10  
+ 11  .nav {
+ 12    height: -140px;
+ 13    width: 100%;
+ 14    background-color: #f5f5f5;
+ 15  }
+ 16  
+ 17  .link {
+ 18    text-decoration: none;
+ 19    color: #1976d2;
+ 20    cursor: pointer;
+ 21  
+ 22    transition: color 0.15s;
+ 23  }
+ 24  
+ 25  .link:visited {
+ 26    color: #1976d2;
+ 27  }
+ 28  
+ 29  .link:hover {
+ 30    color: #0c3b81;
+ 31  }
+
+
+В.21 main.tsx.
+Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab3/pzpi-22-1-holovin-sviatoslav-lab3/fe/src/main.tsx
+  1  import React from "react";
+  2  import ReactDOM from "react-dom/client";
+  3  
+  4  import "./index.css";
+  5  import Router from "./Router.tsx";
+  6  
+  7  ReactDOM.createRoot(document.getElementById("root")!).render(
+  8    <React.StrictMode>
+  9      <Router />
+ 10    </React.StrictMode>,
+ 11  );
+
+
+В.22 DBMutate.tsx.
+Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab3/pzpi-22-1-holovin-sviatoslav-lab3/fe/src/routes/DBMutate.tsx
+  1  import { Button, FormControl, TextField } from "@mui/material";
+  2  import { useState } from "react";
+  3  import { useNavigate } from "react-router-dom";
+  4  import Loader from "../components/Loader";
+  5  import { useDBExportMutation } from "../features/useDBExportMutation";
+  6  import { useDBImportMutation } from "../features/useDBImportMutation";
+  7  
+  8  export const DBMutate = () => {
+  9    const navigate = useNavigate();
+ 10    const [password, setPassword] = useState("");
+ 11    const [data, setData] = useState("");
+ 12    const [error, setError] = useState("");
+ 13  
+ 14    const exportMutation = useDBExportMutation();
+ 15    const importMutation = useDBImportMutation();
+ 16  
+ 17    const handleExport = async () => {
+ 18      setError("");
+ 19      try {
+ 20        const res = await exportMutation.mutateAsync({ password });
+ 21        setData(res.db);
+ 22      } catch (e) {
+ 23        setError((e as Error).message);
+ 24      }
+ 25    };
+ 26  
+ 27    const handleImport = async () => {
+ 28      setError("");
+ 29      try {
+ 30        await importMutation.mutateAsync({ password, data });
+ 31        navigate("/");
+ 32      } catch (e) {
+ 33        setError((e as Error).message);
+ 34      }
+ 35    };
+ 36  
+ 37    const handleClear = () => {
+ 38      setError("");
+ 39      setPassword("");
+ 40      setData("");
+ 41    };
+ 42  
+ 43    const isLoading = exportMutation.isLoading || importMutation.isLoading;
+ 44  
+ 45    if (isLoading) return <Loader />;
+ 46  
+ 47    return (
+ 48      <div style={{ paddingInline: 10 }}>
+ 49        <h4
+ 50          style={{
+ 51            textTransform: "uppercase",
+ 52            fontWeight: "bold",
+ 53            marginBlock: 30,
+ 54          }}
+ 55        >
+ 56          Експорт / Імпорт бази даних
+ 57        </h4>
+ 58  
+ 59        <div style={{ color: "red", paddingBottom: 10 }}>
+ 60          {error && `Щось пішло не так: ${error}`}
+ 61        </div>
+ 62  
+ 63        <div
+ 64          style={{
+ 65            border: "1px solid #ccc",
+ 66            borderRadius: 5,
+ 67            padding: 10,
+ 68            display: "flex",
+ 69            flexDirection: "column",
+ 70            gap: "1rem",
+ 71          }}
+ 72        >
+ 73          <FormControl fullWidth>
+ 74            <TextField
+ 75              label="Пароль"
+ 76              type="password"
+ 77              value={password}
+ 78              onChange={(e) => setPassword(e.target.value)}
+ 79              size="small"
+ 80            />
+ 81          </FormControl>
+ 82  
+ 83          <FormControl fullWidth>
+ 84            <TextField
+ 85              label="Дані"
+ 86              value={data}
+ 87              onChange={(e) => setData(e.target.value)}
+ 88              multiline
+ 89              minRows={6}
+ 90              size="small"
+ 91            />
+ 92          </FormControl>
+ 93  
+ 94          <div style={{ display: "flex", justifyContent: "center", gap: "1rem" }}>
+ 95            <Button variant="contained" onClick={handleExport}>
+ 96              Export
+ 97            </Button>
+ 98            <Button variant="contained" color="success" onClick={handleImport}>
+ 99              Import
+100            </Button>
+101            <Button variant="contained" color="error" onClick={handleClear}>
+102              Clear
+103            </Button>
+104          </div>
+105        </div>
+106      </div>
+107    );
+108  };
+109  
+110  export default DBMutate;
+
+
+В.23 LocationMutate.tsx.
+Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab3/pzpi-22-1-holovin-sviatoslav-lab3/fe/src/routes/LocationMutate.tsx
+  1  import { yupResolver } from "@hookform/resolvers/yup";
+  2  import { Button, FormControl, TextField } from "@mui/material";
+  3  import { useState } from "react";
+  4  import { Controller, useForm } from "react-hook-form";
+  5  import { useNavigate } from "react-router-dom";
+  6  import * as yup from "yup";
+  7  import Loader from "../components/Loader";
+  8  import { useLocationMutation } from "../features/useLocationMutation";
+  9  import { useLocationQuery } from "../features/useLocationQuery";
+ 10  import { Location } from "../types/Location";
+ 11  import { useEdit } from "../utils/useEdit";
+ 12  
+ 13  const schema = yup.object({
+ 14    name: yup.string().required("Заповніть поле"),
+ 15    address: yup.string().required("Заповніть поле"),
+ 16    responsible_user_phone: yup.string().required("Заповніть поле"),
+ 17  }) as yup.ObjectSchema<Location>;
+ 18  
+ 19  const LocationMutate = () => {
+ 20    const navigate = useNavigate();
+ 21    const [error, setError] = useState<string>("");
+ 22  
+ 23    const {
+ 24      id: locationId,
+ 25      isEdit,
+ 26      isLoading,
+ 27      values,
+ 28    } = useEdit(useLocationQuery, setError);
+ 29    const mutation = useLocationMutation();
+ 30  
+ 31    const form = useForm<Location>({
+ 32      resolver: yupResolver(schema),
+ 33      mode: "onSubmit",
+ 34      defaultValues: {
+ 35        name: "",
+ 36        address: "",
+ 37        responsible_user_phone: "",
+ 38      },
+ 39      values,
+ 40      resetOptions: { keepDefaultValues: true },
+ 41    });
+ 42  
+ 43    const handleCreate = form.handleSubmit((data) => {
+ 44      setError("");
+ 45      mutation
+ 46        .mutateAsync({
+ 47          type: isEdit ? "update" : "create",
+ 48          data,
+ 49        })
+ 50        .then(() => {
+ 51          navigate(`/locations`);
+ 52        })
+ 53        .catch((err) => {
+ 54          setError(err.message);
+ 55        });
+ 56    });
+ 57  
+ 58    const handleReset = () => {
+ 59      setError("");
+ 60      form.reset();
+ 61    };
+ 62  
+ 63    if (isLoading) {
+ 64      return <Loader />;
+ 65    }
+ 66  
+ 67    if (isEdit && !values) {
+ 68      return (
+ 69        <div style={{ paddingInline: 10 }}>
+ 70          <h4
+ 71            style={{
+ 72              textTransform: "uppercase",
+ 73              fontWeight: "bold",
+ 74              marginBlock: 30,
+ 75            }}
+ 76          >
+ 77            Локацію не знайдено
+ 78          </h4>
+ 79        </div>
+ 80      );
+ 81    }
+ 82  
+ 83    return (
+ 84      <div style={{ paddingInline: 10 }}>
+ 85        <div
+ 86          style={{
+ 87            display: "flex",
+ 88            justifyContent: "space-between",
+ 89            alignItems: "center",
+ 90          }}
+ 91        >
+ 92          <h4
+ 93            style={{
+ 94              textTransform: "uppercase",
+ 95              fontWeight: "bold",
+ 96              marginBlock: 30,
+ 97            }}
+ 98          >
+ 99            {isEdit ? "Редагувати" : "Додати"} локацію
+100            {isEdit && ` # ${locationId}`}
+101          </h4>
+102        </div>
+103  
+104        <div style={{ color: "red", paddingBottom: 10 }}>
+105          {error && <>Щось пішло не так: {error}</>}
+106        </div>
+107  
+108        <div
+109          style={{
+110            marginBottom: 20,
+111            padding: 10,
+112            border: "1px solid #ccc",
+113            borderRadius: 5,
+114          }}
+115        >
+116          <form
+117            style={{
+118              display: "flex",
+119              flexDirection: "column",
+120              justifyContent: "space-between",
+121              alignItems: "center",
+122              flexWrap: "wrap",
+123              width: "100%",
+124            }}
+125            onSubmit={handleCreate}
+126          >
+127            <Controller
+128              name="name"
+129              control={form.control}
+130              render={({ field, fieldState }) => (
+131                <FormControl
+132                  size="small"
+133                  fullWidth
+134                  sx={{ m: 1, minWidth: 120, maxWidth: "95%" }}
+135                >
+136                  <TextField
+137                    label="Назва локації"
+138                    placeholder="Введіть назву локації"
+139                    onChange={field.onChange}
+140                    value={field.value}
+141                    type="search"
+142                    size="small"
+143                    error={!!fieldState.error}
+144                    helperText={fieldState.error?.message}
+145                  />
+146                </FormControl>
+147              )}
+148            />
+149  
+150            <Controller
+151              name="address"
+152              control={form.control}
+153              render={({ field, fieldState }) => (
+154                <FormControl
+155                  size="small"
+156                  fullWidth
+157                  sx={{ m: 1, minWidth: 120, maxWidth: "95%" }}
+158                >
+159                  <TextField
+160                    label="Адреса"
+161                    placeholder="Введіть адресу локації"
+162                    onChange={field.onChange}
+163                    value={field.value}
+164                    type="search"
+165                    size="small"
+166                    error={!!fieldState.error}
+167                    helperText={fieldState.error?.message}
+168                  />
+169                </FormControl>
+170              )}
+171            />
+172  
+173            <Controller
+174              name="responsible_user_phone"
+175              control={form.control}
+176              render={({ field, fieldState }) => (
+177                <FormControl
+178                  size="small"
+179                  fullWidth
+180                  sx={{ m: 1, minWidth: 120, maxWidth: "95%" }}
+181                >
+182                  <TextField
+183                    label="Телефон відповідального"
+184                    placeholder="Введіть телефон відповідального"
+185                    onChange={field.onChange}
+186                    value={field.value}
+187                    type="search"
+188                    size="small"
+189                    error={!!fieldState.error}
+190                    helperText={fieldState.error?.message}
+191                  />
+192                </FormControl>
+193              )}
+194            />
+195  
+196            <div
+197              style={{ width: "100%", display: "flex", justifyContent: "center" }}
+198            >
+199              <Button
+200                type="submit"
+201                variant="contained"
+202                sx={{ m: 1, minWidth: 80 }}
+203              >
+204                {isEdit ? "Редагувати" : "Додати"}
+205              </Button>
+206              <Button
+207                onClick={handleReset}
+208                variant="contained"
+209                color="error"
+210                sx={{ m: 1, minWidth: 80 }}
+211              >
+212                Очистити
+213              </Button>
+214            </div>
+215          </form>
+216        </div>
+217      </div>
+218    );
+219  };
+220  
+221  export default LocationMutate;
+
+
+В.24 LocationSearch.tsx.
+Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab3/pzpi-22-1-holovin-sviatoslav-lab3/fe/src/routes/LocationSearch.tsx
+  1  import { Delete, Edit, Summarize } from "@mui/icons-material";
+  2  import { Button, IconButton } from "@mui/material";
+  3  import { GridColDef } from "@mui/x-data-grid";
+  4  import { useEffect, useMemo, useState } from "react";
+  5  import { Link } from "react-router-dom";
+  6  
+  7  import { useLocationMutation } from "../features/useLocationMutation";
+  8  import { useLocationQuery } from "../features/useLocationQuery";
+  9  import { getStyledDataGrid } from "../utils/getStyledDataGrid";
+ 10  
+ 11  const StyledDataGrid = getStyledDataGrid();
+ 12  
+ 13  export const LocationSearch = () => {
+ 14    const query = useLocationQuery();
+ 15    const mutation = useLocationMutation();
+ 16    const [error, setError] = useState<string>("");
+ 17  
+ 18    const rows = useMemo(() => query.data ?? [], [query.data]);
+ 19  
+ 20    const columns = useMemo(() => {
+ 21      return [
+ 22        {
+ 23          field: "name",
+ 24          headerName: "Назва локації",
+ 25          type: "string",
+ 26          width: 200,
+ 27          filterable: false,
+ 28          sortable: false,
+ 29        },
+ 30        {
+ 31          field: "address",
+ 32          headerName: "Адреса",
+ 33          type: "string",
+ 34          width: 250,
+ 35          filterable: false,
+ 36          sortable: false,
+ 37        },
+ 38        {
+ 39          field: "responsible_user_phone",
+ 40          headerName: "Телефон відповідального",
+ 41          type: "string",
+ 42          width: 200,
+ 43          filterable: false,
+ 44          sortable: false,
+ 45          renderCell: (v) =>
+ 46            v.value ? (
+ 47              <a className="link" href={`tel:${v.value}`}>
+ 48                {v.value}
+ 49              </a>
+ 50            ) : (
+ 51              "-"
+ 52            ),
+ 53        },
+ 54        {
+ 55          field: "actions",
+ 56          headerName: "Дії",
+ 57          sortable: false,
+ 58          filterable: false,
+ 59          disableColumnMenu: true,
+ 60          width: 105,
+ 61          renderCell: (cellValues) => (
+ 62            <>
+ 63              <Link to={`/locations/report/${cellValues.row.location_id}`}>
+ 64                <IconButton aria-label="report">
+ 65                  <Summarize />
+ 66                </IconButton>
+ 67              </Link>
+ 68              <Link to={`/locations/update/${cellValues.row.location_id}`}>
+ 69                <IconButton aria-label="edit">
+ 70                  <Edit />
+ 71                </IconButton>
+ 72              </Link>
+ 73              <IconButton
+ 74                aria-label="delete"
+ 75                onClick={() => {
+ 76                  setError("");
+ 77                  const id = cellValues.row.location_id;
+ 78                  const confirm = window.confirm(
+ 79                    `Видалити локацію ${cellValues.row.name}?`,
+ 80                  );
+ 81                  if (!confirm) return;
+ 82                  mutation
+ 83                    .mutateAsync({
+ 84                      type: "delete",
+ 85                      data: { location_id: id },
+ 86                    })
+ 87                    .catch((e) => setError(e.message));
+ 88                }}
+ 89              >
+ 90                <Delete />
+ 91              </IconButton>
+ 92            </>
+ 93          ),
+ 94        },
+ 95      ] as GridColDef[];
+ 96    }, [mutation]);
+ 97  
+ 98    useEffect(() => {
+ 99      if (query.isError) setError((query.error as Error)?.message);
+100    }, [query.isError, query.error]);
+101  
+102    return (
+103      <>
+104        <div style={{ marginBottom: "1rem" }}>
+105          <div
+106            style={{
+107              display: "flex",
+108              justifyContent: "space-between",
+109              alignItems: "center",
+110              marginBottom: ".25rem",
+111            }}
+112          >
+113            <div style={{ color: "red" }}>
+114              {error && `Щось пішло не так: ${error}`}
+115            </div>
+116            <Link to="/locations/create">
+117              <Button variant="contained" color="success">
+118                Додати локацію
+119              </Button>
+120            </Link>
+121          </div>
+122        </div>
+123  
+124        <div
+125          style={{
+126            height: 550,
+127            borderRadius: "5px",
+128            backgroundColor: "#f5f5f5",
+129          }}
+130        >
+131          <StyledDataGrid
+132            loading={query.isLoading}
+133            rows={rows}
+134            getRowId={(row) => row.location_id}
+135            columns={columns}
+136            columnBuffer={3}
+137            pageSizeOptions={[]}
+138            getRowHeight={() => "auto"}
+139            columnHeaderHeight={75}
+140            rowSelection={false}
+141            localeText={{ noRowsLabel: "Даних немає" }}
+142          />
+143        </div>
+144      </>
+145    );
+146  };
+147  
+148  export default LocationSearch;
+
+
+В.25 Nav.tsx.
+Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab3/pzpi-22-1-holovin-sviatoslav-lab3/fe/src/routes/Nav.tsx
+  1  import { Button, ButtonGroup } from "@mui/material";
+  2  import { Link } from "react-router-dom";
+  3  import ACLWrapper from "../components/ACLWrapper";
+  4  import { ACL } from "../utils/ACL";
+  5  import { UserRole } from "../types/User";
+  6  import { useQueryClient } from "react-query";
+  7  import { CURRENT_USER_QUERY_KEY } from "../features/useCurrentUserQuery";
+  8  
+  9  export const Nav = () => {
+ 10    const queryClient = useQueryClient();
+ 11  
+ 12    return (
+ 13      <div
+ 14        style={{
+ 15          marginBottom: "35px",
+ 16        }}
+ 17      >
+ 18        <div className="nav">
+ 19          <div
+ 20            style={{
+ 21              display: "flex",
+ 22              justifyContent: "space-between",
+ 23              padding: ".5rem",
+ 24            }}
+ 25          >
+ 26            <div
+ 27              style={{
+ 28                display: "grid",
+ 29                gridTemplateColumns: "auto 1fr",
+ 30                gridTemplateRows: "auto auto",
+ 31                gap: "0.5rem 1rem",
+ 32                alignItems: "center",
+ 33              }}
+ 34            >
+ 35              <p
+ 36                style={{
+ 37                  fontSize: "1.2rem",
+ 38                  fontWeight: "bold",
+ 39                  margin: ".5rem",
+ 40                }}
+ 41              >
+ 42                <ACLWrapper
+ 43                  fallback={<>&nbsp;</>}
+ 44                  allowedRoles={[UserRole.Admin, UserRole.Staff]}
+ 45                >
+ 46                  Перегляд:
+ 47                </ACLWrapper>
+ 48              </p>
+ 49              <div style={{ height: "auto" }}>
+ 50                <ButtonGroup variant="contained">
+ 51                  <ACLWrapper fallback={null} {...ACL.vaccines}>
+ 52                    <Link to="/vaccines">
+ 53                      <Button>Вакцини</Button>
+ 54                    </Link>
+ 55                  </ACLWrapper>
+ 56  
+ 57                  <ACLWrapper fallback={null} {...ACL.locations}>
+ 58                    <Link to="/locations">
+ 59                      <Button>Локації</Button>
+ 60                    </Link>
+ 61                  </ACLWrapper>
+ 62  
+ 63                  <ACLWrapper fallback={null} {...ACL.orders}>
+ 64                    <Link to="/orders">
+ 65                      <Button>Замовлення</Button>
+ 66                    </Link>
+ 67                  </ACLWrapper>
+ 68  
+ 69                  <ACLWrapper fallback={null} {...ACL.notifications}>
+ 70                    <Link to="/notifications">
+ 71                      <Button>Сповіщення</Button>
+ 72                    </Link>
+ 73                  </ACLWrapper>
+ 74  
+ 75                  <ACLWrapper fallback={null} {...ACL.sensorData}>
+ 76                    <Link to="/sensor-data">
+ 77                      <Button>Дані датчиків</Button>
+ 78                    </Link>
+ 79                  </ACLWrapper>
+ 80  
+ 81                  <ACLWrapper fallback={null} {...ACL.backup}>
+ 82                    <Link to="/backup">
+ 83                      <Button>База даних</Button>
+ 84                    </Link>
+ 85                  </ACLWrapper>
+ 86                </ButtonGroup>
+ 87              </div>
+ 88  
+ 89              <p
+ 90                style={{
+ 91                  fontSize: "1.2rem",
+ 92                  fontWeight: "bold",
+ 93                  margin: ".5rem",
+ 94                }}
+ 95              >
+ 96                &nbsp;
+ 97              </p>
+ 98              <div>&nbsp;</div>
+ 99            </div>
+100  
+101            <div
+102              style={{
+103                display: "flex",
+104                gap: "0.5rem",
+105                flexDirection: "column",
+106              }}
+107            >
+108              <Link to="/">
+109                <Button variant="contained" color="success">
+110                  Головна
+111                </Button>
+112              </Link>
+113              <Button
+114                variant="contained"
+115                color="error"
+116                onClick={() => {
+117                  localStorage.removeItem("jwt");
+118                  queryClient.resetQueries(CURRENT_USER_QUERY_KEY);
+119                }}
+120              >
+121                Вийти
+122              </Button>
+123            </div>
+124          </div>
+125  
+126          <div
+127            style={{
+128              border: "3px solid #ccc",
+129              margin: "0.5rem 0 0 0 ",
+130            }}
+131          />
+132        </div>
+133      </div>
+134    );
+135  };
+
+
+В.26 NotificationSearch.tsx.
+Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab3/pzpi-22-1-holovin-sviatoslav-lab3/fe/src/routes/NotificationSearch.tsx
+  1  import { GridColDef } from "@mui/x-data-grid";
+  2  import { useEffect, useMemo, useState } from "react";
+  3  
+  4  import { useNotificationQuery } from "../features/useNotificationQuery";
+  5  import { getStyledDataGrid } from "../utils/getStyledDataGrid";
+  6  
+  7  const StyledDataGrid = getStyledDataGrid();
+  8  
+  9  export const NotificationSearch = () => {
+ 10    const query = useNotificationQuery();
+ 11    const [error, setError] = useState<string>("");
+ 12  
+ 13    const rows = useMemo(() => query.data ?? [], [query.data]);
+ 14  
+ 15    const columns = useMemo(() => {
+ 16      return [
+ 17        {
+ 18          field: "notification_id",
+ 19          headerName: "ID",
+ 20          type: "number",
+ 21          width: 100,
+ 22          filterable: false,
+ 23          sortable: false,
+ 24        },
+ 25        {
+ 26          field: "phone",
+ 27          headerName: "Телефон",
+ 28          type: "string",
+ 29          width: 150,
+ 30          filterable: false,
+ 31          sortable: false,
+ 32          renderCell: (v) =>
+ 33            v.value ? (
+ 34              <a className="link" href={`tel:${v.value}`}>
+ 35                {v.value}
+ 36              </a>
+ 37            ) : (
+ 38              "-"
+ 39            ),
+ 40        },
+ 41        {
+ 42          field: "sent_at",
+ 43          headerName: "Відправлено",
+ 44          type: "dateTime",
+ 45          width: 200,
+ 46          valueFormatter: (p) => new Date(p.value).toLocaleString(),
+ 47          filterable: false,
+ 48          sortable: false,
+ 49        },
+ 50        {
+ 51          field: "message",
+ 52          headerName: "Повідомлення",
+ 53          type: "string",
+ 54          width: 300,
+ 55          filterable: false,
+ 56          sortable: false,
+ 57        },
+ 58        {
+ 59          field: "notification_type",
+ 60          headerName: "Тип",
+ 61          type: "string",
+ 62          width: 150,
+ 63          filterable: false,
+ 64          sortable: false,
+ 65        },
+ 66      ] as GridColDef[];
+ 67    }, []);
+ 68  
+ 69    useEffect(() => {
+ 70      if (query.isError) setError((query.error as Error)?.message);
+ 71    }, [query.isError, query.error]);
+ 72  
+ 73    return (
+ 74      <>
+ 75        <div style={{ marginBottom: "1rem" }}>
+ 76          <div
+ 77            style={{
+ 78              display: "flex",
+ 79              justifyContent: "space-between",
+ 80              alignItems: "center",
+ 81              marginBottom: ".25rem",
+ 82            }}
+ 83          >
+ 84            <div style={{ color: "red" }}>
+ 85              {error && `Щось пішло не так: ${error}`}
+ 86            </div>
+ 87          </div>
+ 88        </div>
+ 89  
+ 90        <div
+ 91          style={{
+ 92            height: 550,
+ 93            borderRadius: "5px",
+ 94            backgroundColor: "#f5f5f5",
+ 95          }}
+ 96        >
+ 97          <StyledDataGrid
+ 98            loading={query.isLoading}
+ 99            rows={rows}
+100            getRowId={(r) => r.notification_id}
+101            columns={columns}
+102            columnBuffer={3}
+103            pageSizeOptions={[]}
+104            getRowHeight={() => "auto"}
+105            columnHeaderHeight={75}
+106            rowSelection={false}
+107            localeText={{ noRowsLabel: "Даних немає" }}
+108          />
+109        </div>
+110      </>
+111    );
+112  };
+113  
+114  export default NotificationSearch;
+
+
+В.27 OrderMutate.tsx.
+Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab3/pzpi-22-1-holovin-sviatoslav-lab3/fe/src/routes/OrderMutate.tsx
+  1  import { yupResolver } from "@hookform/resolvers/yup";
+  2  import { Button, FormControl, TextField } from "@mui/material";
+  3  import { useState } from "react";
+  4  import { Controller, useForm } from "react-hook-form";
+  5  import { useNavigate } from "react-router-dom";
+  6  import * as yup from "yup";
+  7  import Loader from "../components/Loader";
+  8  import { useOrderMutation } from "../features/useOrderMutation";
+  9  import { useOrderQuery } from "../features/useOrderQuery";
+ 10  import { Order } from "../types/Order";
+ 11  import { useEdit } from "../utils/useEdit";
+ 12  
+ 13  const schema = yup.object({
+ 14    username: yup.string().required("Заповніть поле"),
+ 15    order_date: yup.date().typeError("Має бути датою").required("Заповніть поле"),
+ 16    order_status: yup.string().required("Заповніть поле"),
+ 17  }) as yup.ObjectSchema<Order>;
+ 18  
+ 19  export const OrderMutate = () => {
+ 20    const navigate = useNavigate();
+ 21    const [error, setError] = useState<string>("");
+ 22  
+ 23    const {
+ 24      id: orderId,
+ 25      isEdit,
+ 26      isLoading,
+ 27      values,
+ 28    } = useEdit(useOrderQuery, setError);
+ 29    const mutation = useOrderMutation();
+ 30  
+ 31    const form = useForm<Order>({
+ 32      resolver: yupResolver(schema),
+ 33      mode: "onSubmit",
+ 34      defaultValues: {
+ 35        username: "",
+ 36        order_date: new Date(),
+ 37        order_status: "",
+ 38      },
+ 39      values,
+ 40      resetOptions: { keepDefaultValues: true },
+ 41    });
+ 42  
+ 43    const handleSubmit = form.handleSubmit((data) => {
+ 44      setError("");
+ 45      mutation
+ 46        .mutateAsync({
+ 47          type: isEdit ? "update" : "create",
+ 48          data,
+ 49        })
+ 50        .then(() => navigate("/orders"))
+ 51        .catch((e) => setError(e.message));
+ 52    });
+ 53  
+ 54    const handleReset = () => {
+ 55      setError("");
+ 56      form.reset();
+ 57    };
+ 58  
+ 59    if (isLoading) return <Loader />;
+ 60  
+ 61    if (isEdit && !values) {
+ 62      return (
+ 63        <div style={{ padding: 16 }}>
+ 64          <h4
+ 65            style={{ textTransform: "uppercase", fontWeight: "bold", margin: 30 }}
+ 66          >
+ 67            Замовлення не знайдено
+ 68          </h4>
+ 69        </div>
+ 70      );
+ 71    }
+ 72  
+ 73    return (
+ 74      <div style={{ padding: 16 }}>
+ 75        <div
+ 76          style={{
+ 77            display: "flex",
+ 78            justifyContent: "space-between",
+ 79            alignItems: "center",
+ 80          }}
+ 81        >
+ 82          <h4
+ 83            style={{
+ 84              textTransform: "uppercase",
+ 85              fontWeight: "bold",
+ 86              marginBlock: 30,
+ 87            }}
+ 88          >
+ 89            {isEdit ? "Редагувати" : "Додати"} замовлення
+ 90            {isEdit && ` # ${orderId}`}
+ 91          </h4>
+ 92        </div>
+ 93  
+ 94        <div style={{ color: "red", paddingBottom: 10 }}>
+ 95          {error && `Щось пішло не так: ${error}`}
+ 96        </div>
+ 97  
+ 98        <div
+ 99          style={{
+100            border: "1px solid #ccc",
+101            borderRadius: 5,
+102            padding: 10,
+103            marginBottom: 20,
+104          }}
+105        >
+106          <form
+107            style={{
+108              display: "flex",
+109              flexDirection: "column",
+110              gap: "1rem",
+111              width: "100%",
+112            }}
+113            onSubmit={handleSubmit}
+114          >
+115            <Controller
+116              name="username"
+117              control={form.control}
+118              render={({ field, fieldState }) => (
+119                <FormControl
+120                  size="small"
+121                  fullWidth
+122                  sx={{ m: 1, minWidth: 120, maxWidth: "95%" }}
+123                >
+124                  <TextField
+125                    label="Автор замовлення"
+126                    placeholder="Введіть автора замовлення"
+127                    onChange={field.onChange}
+128                    value={field.value}
+129                    type="search"
+130                    size="small"
+131                    error={!!fieldState.error}
+132                    helperText={fieldState.error?.message}
+133                  />
+134                </FormControl>
+135              )}
+136            />
+137  
+138            <Controller
+139              name="order_status"
+140              control={form.control}
+141              render={({ field, fieldState }) => (
+142                <FormControl
+143                  size="small"
+144                  fullWidth
+145                  sx={{ m: 1, minWidth: 120, maxWidth: "95%" }}
+146                >
+147                  <TextField
+148                    label="Статус замовлення"
+149                    placeholder="Введіть статус замовлення"
+150                    onChange={field.onChange}
+151                    value={field.value}
+152                    type="search"
+153                    size="small"
+154                    error={!!fieldState.error}
+155                    helperText={fieldState.error?.message}
+156                  />
+157                </FormControl>
+158              )}
+159            />
+160  
+161            <div
+162              style={{ display: "flex", justifyContent: "center", gap: "1rem" }}
+163            >
+164              <Button type="submit" variant="contained">
+165                {isEdit ? "Зберегти" : "Створити"}
+166              </Button>
+167              <Button variant="contained" color="error" onClick={handleReset}>
+168                Очистити
+169              </Button>
+170            </div>
+171          </form>
+172        </div>
+173      </div>
+174    );
+175  };
+176  
+177  export default OrderMutate;
+
+
+В.28 OrderSearch.tsx.
+Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab3/pzpi-22-1-holovin-sviatoslav-lab3/fe/src/routes/OrderSearch.tsx
+  1  import { Delete, Edit } from "@mui/icons-material";
+  2  import { Button, IconButton } from "@mui/material";
+  3  import { GridColDef } from "@mui/x-data-grid";
+  4  import { useEffect, useMemo, useState } from "react";
+  5  import { Link } from "react-router-dom";
+  6  
+  7  import { useOrderMutation } from "../features/useOrderMutation";
+  8  import { useOrderQuery } from "../features/useOrderQuery";
+  9  import { getStyledDataGrid } from "../utils/getStyledDataGrid";
+ 10  
+ 11  const StyledDataGrid = getStyledDataGrid();
+ 12  
+ 13  export const OrderSearch = () => {
+ 14    const query = useOrderQuery();
+ 15    const mutation = useOrderMutation();
+ 16    const [error, setError] = useState<string>("");
+ 17  
+ 18    const rows = useMemo(() => query.data ?? [], [query.data]);
+ 19  
+ 20    const columns = useMemo(() => {
+ 21      return [
+ 22        {
+ 23          field: "username",
+ 24          headerName: "Створив",
+ 25          type: "string",
+ 26          width: 200,
+ 27          filterable: false,
+ 28          sortable: false,
+ 29        },
+ 30        {
+ 31          field: "order_date",
+ 32          headerName: "Дата замовлення",
+ 33          type: "dateTime",
+ 34          width: 200,
+ 35          filterable: false,
+ 36          sortable: false,
+ 37          valueGetter: (params) => new Date(params.value as string),
+ 38          renderCell: (params) =>
+ 39            params.value ? (params.value as Date).toLocaleString() : "-",
+ 40        },
+ 41        {
+ 42          field: "order_status",
+ 43          headerName: "Статус",
+ 44          type: "string",
+ 45          width: 150,
+ 46          filterable: false,
+ 47          sortable: false,
+ 48        },
+ 49        {
+ 50          field: "actions",
+ 51          headerName: "Дії",
+ 52          sortable: false,
+ 53          filterable: false,
+ 54          disableColumnMenu: true,
+ 55          width: 105,
+ 56          renderCell: (cellValues) => (
+ 57            <>
+ 58              <Link to={`/orders/update/${cellValues.row.order_id}`}>
+ 59                <IconButton aria-label="edit">
+ 60                  <Edit />
+ 61                </IconButton>
+ 62              </Link>
+ 63              <IconButton
+ 64                aria-label="delete"
+ 65                onClick={() => {
+ 66                  setError("");
+ 67                  const id = cellValues.row.order_id;
+ 68                  if (!window.confirm(`Видалити замовлення #${id}?`)) return;
+ 69                  mutation
+ 70                    .mutateAsync({ type: "delete", data: { order_id: id } })
+ 71                    .catch((e) => setError(e.message));
+ 72                }}
+ 73              >
+ 74                <Delete />
+ 75              </IconButton>
+ 76            </>
+ 77          ),
+ 78        },
+ 79      ] as GridColDef[];
+ 80    }, [mutation]);
+ 81  
+ 82    useEffect(() => {
+ 83      if (query.isError) setError((query.error as Error)?.message || "");
+ 84    }, [query.isError, query.error]);
+ 85  
+ 86    return (
+ 87      <>
+ 88        <div style={{ marginBottom: "1rem" }}>
+ 89          <div
+ 90            style={{
+ 91              display: "flex",
+ 92              justifyContent: "space-between",
+ 93              alignItems: "center",
+ 94              marginBottom: ".25rem",
+ 95            }}
+ 96          >
+ 97            <div style={{ color: "red" }}>
+ 98              {error && `Щось пішло не так: ${error}`}
+ 99            </div>
+100            <Link to="/orders/create">
+101              <Button variant="contained" color="success">
+102                Додати замовлення
+103              </Button>
+104            </Link>
+105          </div>
+106        </div>
+107  
+108        <div
+109          style={{
+110            height: 550,
+111            borderRadius: "5px",
+112            backgroundColor: "#f5f5f5",
+113          }}
+114        >
+115          <StyledDataGrid
+116            loading={query.isLoading}
+117            rows={rows}
+118            getRowId={(row) => row.order_id}
+119            columns={columns}
+120            columnBuffer={3}
+121            pageSizeOptions={[]}
+122            getRowHeight={() => "auto"}
+123            columnHeaderHeight={75}
+124            rowSelection={false}
+125            localeText={{ noRowsLabel: "Даних немає" }}
+126          />
+127        </div>
+128      </>
+129    );
+130  };
+131  
+132  export default OrderSearch;
+
+
+В.29 ReportDetails.tsx.
+Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab3/pzpi-22-1-holovin-sviatoslav-lab3/fe/src/routes/ReportDetails.tsx
+  1  import { useEffect, useRef, useState } from "react";
+  2  import { useParams } from "react-router-dom";
+  3  import Loader from "../components/Loader";
+  4  import { useReportQuery } from "../features/useReportQuery";
+  5  
+  6  export const ReportDetails = () => {
+  7    const reportRef = useRef<HTMLDivElement>(null);
+  8    const [error, setError] = useState("");
+  9  
+ 10    const { id = "" } = useParams<{ id: string }>();
+ 11    const {
+ 12      data: report,
+ 13      isLoading,
+ 14      isError,
+ 15      error: fetchError,
+ 16    } = useReportQuery(id);
+ 17  
+ 18    useEffect(() => {
+ 19      if (isError) {
+ 20        setError((fetchError as Error)?.message || "Unknown error");
+ 21      }
+ 22    }, [isError, fetchError]);
+ 23  
+ 24    if (isLoading) return <Loader />;
+ 25  
+ 26    if (!report) {
+ 27      return (
+ 28        <div style={{ padding: 16 }}>
+ 29          <h4
+ 30            style={{ textTransform: "uppercase", fontWeight: "bold", margin: 30 }}
+ 31          >
+ 32            Звіт локації не знайдено
+ 33          </h4>
+ 34        </div>
+ 35      );
+ 36    }
+ 37  
+ 38    return (
+ 39      <>
+ 40        <div
+ 41          style={{
+ 42            display: "flex",
+ 43            justifyContent: "space-between",
+ 44            alignItems: "center",
+ 45          }}
+ 46        >
+ 47          <h4
+ 48            style={{
+ 49              textTransform: "uppercase",
+ 50              fontWeight: "bold",
+ 51              marginBlock: 30,
+ 52            }}
+ 53          >
+ 54            Звіт локації #{id}
+ 55          </h4>
+ 56        </div>
+ 57  
+ 58        <div
+ 59          style={{
+ 60            display: "flex",
+ 61            justifyContent: "space-between",
+ 62            alignItems: "center",
+ 63            paddingBottom: 10,
+ 64          }}
+ 65        >
+ 66          <div style={{ color: "red" }}>
+ 67            {error && `Щось пішло не так: ${error}`}
+ 68          </div>
+ 69        </div>
+ 70  
+ 71        <div ref={reportRef}>
+ 72          <section
+ 73            style={{
+ 74              borderRadius: 5,
+ 75              backgroundColor: "#f5f5f5",
+ 76              padding: "1rem",
+ 77              marginBottom: "1rem",
+ 78              display: "grid",
+ 79              gridTemplateColumns: ".3fr 1fr",
+ 80              gap: "0.5rem 1rem",
+ 81              alignItems: "center",
+ 82            }}
+ 83          >
+ 84            <p
+ 85              style={{ fontSize: "1.2rem", fontWeight: "bold", margin: ".5rem" }}
+ 86            >
+ 87              Назва:
+ 88            </p>
+ 89            <p style={{ fontSize: "1.2rem", margin: ".5rem" }}>{report.name}</p>
+ 90  
+ 91            <p
+ 92              style={{ fontSize: "1.2rem", fontWeight: "bold", margin: ".5rem" }}
+ 93            >
+ 94              Адреса:
+ 95            </p>
+ 96            <p style={{ fontSize: "1.2rem", margin: ".5rem" }}>
+ 97              {report.address}
+ 98            </p>
+ 99          </section>
+100  
+101          <h4
+102            style={{
+103              textTransform: "uppercase",
+104              fontWeight: "bold",
+105              margin: "2rem 0 1rem",
+106            }}
+107          >
+108            Інвентарі локації
+109          </h4>
+110  
+111          {report.inventories.length > 0 ? (
+112            report.inventories.map((inv) => (
+113              <div
+114                key={inv.inventory_id}
+115                style={{
+116                  marginBottom: "2rem",
+117                  borderRadius: 5,
+118                  backgroundColor: "#f5f5f5",
+119                  padding: "1rem",
+120                }}
+121              >
+122                <div style={{ marginBottom: "1rem" }}>
+123                  <strong>ID інвентарю:</strong> {inv.inventory_id} &nbsp;|&nbsp;
+124                  <strong>Використано:</strong> {inv.used_quantity} /{" "}
+125                  {inv.max_quantity}
+126                </div>
+127  
+128                <table style={{ width: "100%", borderCollapse: "collapse" }}>
+129                  <thead>
+130                    <tr>
+131                      <th style={{ border: "1px solid #ccc", padding: "0.5rem" }}>
+132                        Вакцина
+133                      </th>
+134                      <th style={{ border: "1px solid #ccc", padding: "0.5rem" }}>
+135                        Кількість
+136                      </th>
+137                    </tr>
+138                  </thead>
+139                  <tbody>
+140                    {inv.stored_vaccines.map((v) => (
+141                      <tr key={v.vaccine_id}>
+142                        <td
+143                          style={{ border: "1px solid #ccc", padding: "0.5rem" }}
+144                        >
+145                          {v.name}
+146                        </td>
+147                        <td
+148                          style={{ border: "1px solid #ccc", padding: "0.5rem" }}
+149                        >
+150                          {v.quantity}
+151                        </td>
+152                      </tr>
+153                    ))}
+154                  </tbody>
+155                </table>
+156              </div>
+157            ))
+158          ) : (
+159            <p>Немає інвентарів для відображення</p>
+160          )}
+161        </div>
+162      </>
+163    );
+164  };
+165  
+166  export default ReportDetails;
+
+
+В.30 SensorDataSearch.tsx.
+Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab3/pzpi-22-1-holovin-sviatoslav-lab3/fe/src/routes/SensorDataSearch.tsx
+  1  import { GridColDef } from "@mui/x-data-grid";
+  2  import { useEffect, useMemo, useState } from "react";
+  3  
+  4  import { useLocationQuery } from "../features/useLocationQuery";
+  5  import { useSensorDataQuery } from "../features/useSensorDataQuery";
+  6  import { getStyledDataGrid } from "../utils/getStyledDataGrid";
+  7  
+  8  const StyledDataGrid = getStyledDataGrid();
+  9  
+ 10  export const SensorDataSearch = () => {
+ 11    const locationQuery = useLocationQuery();
+ 12    const locations = useMemo(
+ 13      () => locationQuery.data ?? [],
+ 14      [locationQuery.data],
+ 15    );
+ 16  
+ 17    const query = useSensorDataQuery();
+ 18    const [error, setError] = useState<string>("");
+ 19  
+ 20    const rows = useMemo(() => query.data ?? [], [query.data]);
+ 21  
+ 22    const columns = useMemo(() => {
+ 23      return [
+ 24        {
+ 25          field: "sensor_data_id",
+ 26          headerName: "ID",
+ 27          type: "number",
+ 28          filterable: false,
+ 29          sortable: false,
+ 30          width: 100,
+ 31        },
+ 32        {
+ 33          field: "location_id",
+ 34          headerName: "Локація",
+ 35          type: "number",
+ 36          width: 300,
+ 37          filterable: false,
+ 38          sortable: false,
+ 39          renderCell: (params) => {
+ 40            const location = locations.find(
+ 41              (l) => l.location_id === params.value,
+ 42            );
+ 43            return location?.name ?? "-";
+ 44          },
+ 45        },
+ 46        {
+ 47          field: "updated_at",
+ 48          headerName: "Час надсилання",
+ 49          type: "dateTime",
+ 50          width: 200,
+ 51          filterable: false,
+ 52          sortable: false,
+ 53          valueFormatter: (params) => new Date(params.value).toLocaleString(),
+ 54        },
+ 55        {
+ 56          field: "temperature",
+ 57          headerName: "Температура °C",
+ 58          type: "number",
+ 59          width: 150,
+ 60          filterable: false,
+ 61          sortable: false,
+ 62        },
+ 63        {
+ 64          field: "humidity",
+ 65          headerName: "Вологість %",
+ 66          type: "number",
+ 67          width: 150,
+ 68          filterable: false,
+ 69          sortable: false,
+ 70        },
+ 71      ] as GridColDef[];
+ 72    }, [locations]);
+ 73  
+ 74    useEffect(() => {
+ 75      if (query.isError) setError((query.error as Error)?.message);
+ 76      if (locationQuery.isError)
+ 77        setError((locationQuery.error as Error)?.message);
+ 78    }, [query.isError, query.error, locationQuery.isError, locationQuery.error]);
+ 79  
+ 80    return (
+ 81      <>
+ 82        <div style={{ marginBottom: "1rem" }}>
+ 83          <div
+ 84            style={{
+ 85              display: "flex",
+ 86              justifyContent: "space-between",
+ 87              alignItems: "center",
+ 88              marginBottom: ".25rem",
+ 89            }}
+ 90          >
+ 91            <div style={{ color: "red" }}>
+ 92              {error && `Щось пішло не так: ${error}`}
+ 93            </div>
+ 94          </div>
+ 95        </div>
+ 96  
+ 97        <div
+ 98          style={{
+ 99            height: 550,
+100            borderRadius: "5px",
+101            backgroundColor: "#f5f5f5",
+102          }}
+103        >
+104          <StyledDataGrid
+105            loading={query.isLoading || locationQuery.isLoading}
+106            rows={rows}
+107            getRowId={(row) => row.sensor_data_id}
+108            columns={columns}
+109            columnBuffer={3}
+110            pageSizeOptions={[]}
+111            getRowHeight={() => "auto"}
+112            columnHeaderHeight={75}
+113            rowSelection={false}
+114            localeText={{ noRowsLabel: "Даних немає" }}
+115          />
+116        </div>
+117      </>
+118    );
+119  };
+120  
+121  export default SensorDataSearch;
+
+
+В.31 VaccineMutate.tsx.
+Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab3/pzpi-22-1-holovin-sviatoslav-lab3/fe/src/routes/VaccineMutate.tsx
+  1  import { yupResolver } from "@hookform/resolvers/yup";
+  2  import { Button, FormControl, TextField } from "@mui/material";
+  3  import { useState } from "react";
+  4  import { Controller, useForm } from "react-hook-form";
+  5  import { useNavigate } from "react-router-dom";
+  6  import * as yup from "yup";
+  7  import Loader from "../components/Loader";
+  8  import { useVaccineMutation } from "../features/useVaccineMutation";
+  9  import { useVaccineQuery } from "../features/useVaccineQuery";
+ 10  import { Vaccine } from "../types/Vaccine";
+ 11  import { useEdit } from "../utils/useEdit";
+ 12  
+ 13  const schema = yup.object({
+ 14    name: yup.string().required("Заповніть поле"),
+ 15    description: yup.string().required("Заповніть поле"),
+ 16    min_temperature: yup
+ 17      .number()
+ 18      .typeError("Має бути число")
+ 19      .required("Заповніть поле"),
+ 20    max_temperature: yup
+ 21      .number()
+ 22      .typeError("Має бути число")
+ 23      .required("Заповніть поле"),
+ 24    min_humidity: yup
+ 25      .number()
+ 26      .typeError("Має бути число")
+ 27      .required("Заповніть поле"),
+ 28    max_humidity: yup
+ 29      .number()
+ 30      .typeError("Має бути число")
+ 31      .required("Заповніть поле"),
+ 32  }) as yup.ObjectSchema<Vaccine>;
+ 33  
+ 34  const VaccineMutate = () => {
+ 35    const navigate = useNavigate();
+ 36    const [error, setError] = useState<string>("");
+ 37  
+ 38    const {
+ 39      id: vaccineId,
+ 40      isEdit,
+ 41      isLoading,
+ 42      values,
+ 43    } = useEdit(useVaccineQuery, setError);
+ 44    const mutation = useVaccineMutation();
+ 45  
+ 46    const form = useForm<Vaccine>({
+ 47      resolver: yupResolver(schema),
+ 48      mode: "onSubmit",
+ 49      defaultValues: {
+ 50        name: "",
+ 51        description: "",
+ 52        min_temperature: 0,
+ 53        max_temperature: 0,
+ 54        min_humidity: 0,
+ 55        max_humidity: 0,
+ 56      },
+ 57      values,
+ 58      resetOptions: { keepDefaultValues: true },
+ 59    });
+ 60  
+ 61    const handleCreate = form.handleSubmit((data) => {
+ 62      setError("");
+ 63      mutation
+ 64        .mutateAsync({
+ 65          type: isEdit ? "update" : "create",
+ 66          data,
+ 67        })
+ 68        .then(() => {
+ 69          navigate(`/vaccines`);
+ 70        })
+ 71        .catch((err) => {
+ 72          setError(err.message);
+ 73        });
+ 74    });
+ 75  
+ 76    const handleReset = () => {
+ 77      setError("");
+ 78      form.reset();
+ 79    };
+ 80  
+ 81    if (isLoading) {
+ 82      return <Loader />;
+ 83    }
+ 84  
+ 85    if (isEdit && !values) {
+ 86      return (
+ 87        <div style={{ paddingInline: 10 }}>
+ 88          <h4
+ 89            style={{
+ 90              textTransform: "uppercase",
+ 91              fontWeight: "bold",
+ 92              marginBlock: 30,
+ 93            }}
+ 94          >
+ 95            Вакцину не знайдено
+ 96          </h4>
+ 97        </div>
+ 98      );
+ 99    }
+100  
+101    return (
+102      <div style={{ paddingInline: 10 }}>
+103        <div
+104          style={{
+105            display: "flex",
+106            justifyContent: "space-between",
+107            alignItems: "center",
+108          }}
+109        >
+110          <h4
+111            style={{
+112              textTransform: "uppercase",
+113              fontWeight: "bold",
+114              marginBlock: 30,
+115            }}
+116          >
+117            {isEdit ? "Редагувати" : "Додати"} вакцину
+118            {isEdit && ` # ${vaccineId}`}
+119          </h4>
+120        </div>
+121  
+122        <div style={{ color: "red", paddingBottom: 10 }}>
+123          {error && <>Щось пішло не так: {error}</>}
+124        </div>
+125  
+126        <div
+127          style={{
+128            marginBottom: 20,
+129            padding: 10,
+130            border: "1px solid #ccc",
+131            borderRadius: 5,
+132          }}
+133        >
+134          <form
+135            style={{
+136              display: "flex",
+137              flexDirection: "column",
+138              justifyContent: "space-between",
+139              alignItems: "center",
+140              flexWrap: "wrap",
+141              width: "100%",
+142            }}
+143            onSubmit={handleCreate}
+144          >
+145            <Controller
+146              name="name"
+147              control={form.control}
+148              render={({ field, fieldState }) => (
+149                <FormControl
+150                  size="small"
+151                  fullWidth
+152                  sx={{ m: 1, minWidth: 120, maxWidth: "95%" }}
+153                >
+154                  <TextField
+155                    label="Назва вакцини"
+156                    placeholder="Введіть назву вакцини"
+157                    onChange={field.onChange}
+158                    value={field.value}
+159                    type="search"
+160                    size="small"
+161                    error={!!fieldState.error}
+162                    helperText={fieldState.error?.message}
+163                  />
+164                </FormControl>
+165              )}
+166            />
+167  
+168            <Controller
+169              name="description"
+170              control={form.control}
+171              render={({ field, fieldState }) => (
+172                <FormControl
+173                  size="small"
+174                  fullWidth
+175                  sx={{ m: 1, minWidth: 120, maxWidth: "95%" }}
+176                >
+177                  <TextField
+178                    label="Опис"
+179                    placeholder="Введіть опис вакцини"
+180                    onChange={field.onChange}
+181                    value={field.value}
+182                    multiline
+183                    minRows={3}
+184                    error={!!fieldState.error}
+185                    helperText={fieldState.error?.message}
+186                  />
+187                </FormControl>
+188              )}
+189            />
+190  
+191            <Controller
+192              name="min_temperature"
+193              control={form.control}
+194              render={({ field, fieldState }) => (
+195                <FormControl
+196                  size="small"
+197                  fullWidth
+198                  sx={{ m: 1, minWidth: 120, maxWidth: "95%" }}
+199                >
+200                  <TextField
+201                    label="Мін. температура"
+202                    placeholder="Введіть мінімальну температуру"
+203                    onChange={field.onChange}
+204                    value={field.value}
+205                    type="number"
+206                    size="small"
+207                    error={!!fieldState.error}
+208                    helperText={fieldState.error?.message}
+209                  />
+210                </FormControl>
+211              )}
+212            />
+213  
+214            <Controller
+215              name="max_temperature"
+216              control={form.control}
+217              render={({ field, fieldState }) => (
+218                <FormControl
+219                  size="small"
+220                  fullWidth
+221                  sx={{ m: 1, minWidth: 120, maxWidth: "95%" }}
+222                >
+223                  <TextField
+224                    label="Макс. температура"
+225                    placeholder="Введіть максимальну температуру"
+226                    onChange={field.onChange}
+227                    value={field.value}
+228                    type="number"
+229                    size="small"
+230                    error={!!fieldState.error}
+231                    helperText={fieldState.error?.message}
+232                  />
+233                </FormControl>
+234              )}
+235            />
+236  
+237            <Controller
+238              name="min_humidity"
+239              control={form.control}
+240              render={({ field, fieldState }) => (
+241                <FormControl
+242                  size="small"
+243                  fullWidth
+244                  sx={{ m: 1, minWidth: 120, maxWidth: "95%" }}
+245                >
+246                  <TextField
+247                    label="Мін. вологість"
+248                    placeholder="Введіть мінімальну вологість"
+249                    onChange={field.onChange}
+250                    value={field.value}
+251                    type="number"
+252                    size="small"
+253                    error={!!fieldState.error}
+254                    helperText={fieldState.error?.message}
+255                  />
+256                </FormControl>
+257              )}
+258            />
+259  
+260            <Controller
+261              name="max_humidity"
+262              control={form.control}
+263              render={({ field, fieldState }) => (
+264                <FormControl
+265                  size="small"
+266                  fullWidth
+267                  sx={{ m: 1, minWidth: 120, maxWidth: "95%" }}
+268                >
+269                  <TextField
+270                    label="Макс. вологість"
+271                    placeholder="Введіть максимальну вологість"
+272                    onChange={field.onChange}
+273                    value={field.value}
+274                    type="number"
+275                    size="small"
+276                    error={!!fieldState.error}
+277                    helperText={fieldState.error?.message}
+278                  />
+279                </FormControl>
+280              )}
+281            />
+282  
+283            <div
+284              style={{ width: "100%", display: "flex", justifyContent: "center" }}
+285            >
+286              <Button
+287                type="submit"
+288                variant="contained"
+289                sx={{ m: 1, minWidth: 80 }}
+290              >
+291                {isEdit ? "Редагувати" : "Додати"}
+292              </Button>
+293              <Button
+294                onClick={handleReset}
+295                variant="contained"
+296                color="error"
+297                sx={{ m: 1, minWidth: 80 }}
+298              >
+299                Очистити
+300              </Button>
+301            </div>
+302          </form>
+303        </div>
+304      </div>
+305    );
+306  };
+307  
+308  export default VaccineMutate;
+
+
+В.32 VaccineSearch.tsx.
+Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab3/pzpi-22-1-holovin-sviatoslav-lab3/fe/src/routes/VaccineSearch.tsx
+  1  import { Delete, Edit } from "@mui/icons-material";
+  2  import { Button, IconButton } from "@mui/material";
+  3  import { GridColDef } from "@mui/x-data-grid";
+  4  import { useEffect, useMemo, useState } from "react";
+  5  import { Link } from "react-router-dom";
+  6  
+  7  import { useVaccineMutation } from "../features/useVaccineMutation";
+  8  import { useVaccineQuery } from "../features/useVaccineQuery";
+  9  import { getStyledDataGrid } from "../utils/getStyledDataGrid";
+ 10  
+ 11  const StyledDataGrid = getStyledDataGrid();
+ 12  
+ 13  export const VaccineSearch = () => {
+ 14    const query = useVaccineQuery();
+ 15    const mutation = useVaccineMutation();
+ 16    const [error, setError] = useState<string>("");
+ 17  
+ 18    const rows = useMemo(() => query.data ?? [], [query.data]);
+ 19  
+ 20    const columns = useMemo(() => {
+ 21      return [
+ 22        {
+ 23          field: "name",
+ 24          headerName: "Назва",
+ 25          type: "string",
+ 26          width: 200,
+ 27          filterable: false,
+ 28          sortable: false,
+ 29        },
+ 30        {
+ 31          field: "description",
+ 32          headerName: "Опис",
+ 33          type: "string",
+ 34          width: 300,
+ 35          filterable: false,
+ 36          sortable: false,
+ 37        },
+ 38        {
+ 39          field: "min_temperature",
+ 40          headerName: "Мін. температура",
+ 41          type: "number",
+ 42          width: 150,
+ 43          filterable: false,
+ 44          sortable: false,
+ 45        },
+ 46        {
+ 47          field: "max_temperature",
+ 48          headerName: "Макс. температура",
+ 49          type: "number",
+ 50          width: 150,
+ 51          filterable: false,
+ 52          sortable: false,
+ 53        },
+ 54        {
+ 55          field: "min_humidity",
+ 56          headerName: "Мін. вологість",
+ 57          type: "number",
+ 58          width: 150,
+ 59          filterable: false,
+ 60          sortable: false,
+ 61        },
+ 62        {
+ 63          field: "max_humidity",
+ 64          headerName: "Макс. вологість",
+ 65          type: "number",
+ 66          width: 150,
+ 67          filterable: false,
+ 68          sortable: false,
+ 69        },
+ 70        {
+ 71          field: "actions",
+ 72          headerName: "Дії",
+ 73          sortable: false,
+ 74          filterable: false,
+ 75          disableColumnMenu: true,
+ 76          width: 85,
+ 77          renderCell: (cellValues) => {
+ 78            return (
+ 79              <>
+ 80                <Link to={`/vaccines/update/${cellValues.row.vaccine_id}`}>
+ 81                  <IconButton aria-label="edit">
+ 82                    <Edit />
+ 83                  </IconButton>
+ 84                </Link>
+ 85                <IconButton
+ 86                  aria-label="delete"
+ 87                  onClick={() => {
+ 88                    setError("");
+ 89                    const id = cellValues.row.vaccine_id;
+ 90                    const confirm = window.confirm(
+ 91                      `Видалити вакцину ${cellValues.row.name}?`,
+ 92                    );
+ 93                    if (!confirm) {
+ 94                      return;
+ 95                    }
+ 96                    mutation
+ 97                      .mutateAsync({
+ 98                        type: "delete",
+ 99                        data: { vaccine_id: id },
+100                      })
+101                      .catch((error) => {
+102                        setError(error.message);
+103                      });
+104                  }}
+105                >
+106                  <Delete />
+107                </IconButton>
+108              </>
+109            ) as React.JSX.Element;
+110          },
+111        },
+112      ] as GridColDef[];
+113    }, [mutation]);
+114  
+115    useEffect(() => {
+116      if (query.isError) {
+117        setError((query.error as Error)?.message);
+118      }
+119    }, [query.isError, query.error]);
+120  
+121    return (
+122      <>
+123        <div style={{ marginBottom: "1rem" }}>
+124          <div
+125            style={{
+126              display: "flex",
+127              justifyContent: "space-between",
+128              alignItems: "center",
+129              marginBottom: ".25rem",
+130            }}
+131          >
+132            <div style={{ color: "red" }}>
+133              {error && <>{`Щось пішло не так: ${error}`}</>}
+134            </div>
+135            <Link to="/vaccines/create">
+136              <Button variant="contained" color="success">
+137                Додати вакцину
+138              </Button>
+139            </Link>
+140          </div>
+141        </div>
+142  
+143        <div
+144          style={{
+145            height: 550,
+146            borderRadius: "5px",
+147            backgroundColor: "#f5f5f5",
+148          }}
+149        >
+150          <StyledDataGrid
+151            loading={query.isLoading}
+152            rows={rows}
+153            getRowId={(row) => row.vaccine_id}
+154            columns={columns}
+155            columnBuffer={3}
+156            pageSizeOptions={[]}
+157            getRowHeight={() => "auto"}
+158            columnHeaderHeight={75}
+159            rowSelection={false}
+160            localeText={{
+161              noRowsLabel: "Даних немає",
+162            }}
+163          />
+164        </div>
+165      </>
+166    );
+167  };
+168  
+169  export default VaccineSearch;
+
+
+В.33 Location.ts.
+Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab3/pzpi-22-1-holovin-sviatoslav-lab3/fe/src/types/Location.ts
+  1  export interface Location {
+  2    location_id: number;
+  3    name: string;
+  4    address: string;
+  5    responsible_user_phone: string;
+  6  }
+
+
+В.34 LocationItem.ts.
+Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab3/pzpi-22-1-holovin-sviatoslav-lab3/fe/src/types/LocationItem.ts
+  1  export type LocationItem = {
+  2    location_item_id: string;
+  3    location_id: string;
+  4    vaccine_id: string;
+  5    quantity: number;
+  6  };
+
+
+В.35 Login.ts.
+Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab3/pzpi-22-1-holovin-sviatoslav-lab3/fe/src/types/Login.ts
+  1  export type Login = {
+  2    username: string;
+  3    password: string;
+  4  };
+
+
+В.36 Notification.ts.
+Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab3/pzpi-22-1-holovin-sviatoslav-lab3/fe/src/types/Notification.ts
+  1  export type Notification = {
+  2    notification_id: string;
+  3    phone: string;
+  4    sent_at: Date;
+  5    message: string;
+  6    notification_type: string;
+  7  };
+
+
+В.37 Order.ts.
+Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab3/pzpi-22-1-holovin-sviatoslav-lab3/fe/src/types/Order.ts
+  1  export type Order = {
+  2    order_id: number;
+  3    username: string;
+  4    order_date: Date;
+  5    order_status: string;
+  6  };
+
+
+В.38 Report.ts.
+Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab3/pzpi-22-1-holovin-sviatoslav-lab3/fe/src/types/Report.ts
+  1  export type Report = {
+  2    location_id: string;
+  3    name: string;
+  4    address: string;
+  5    inventories: {
+  6      inventory_id: string;
+  7      max_quantity: number;
+  8      used_quantity: number;
+  9      stored_vaccines: {
+ 10        vaccine_id: string;
+ 11        name: string;
+ 12        description: string;
+ 13        quantity: number;
+ 14      }[];
+ 15    }[];
+ 16  };
+
+
+В.39 SensorData.ts.
+Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab3/pzpi-22-1-holovin-sviatoslav-lab3/fe/src/types/SensorData.ts
+  1  export type SensorData = {
+  2    sensor_data_id: string;
+  3    location_id: string;
+  4    updated_at: Date;
+  5    temperature: number;
+  6    humidity: number;
+  7  };
+
+
+В.40 User.ts.
+Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab3/pzpi-22-1-holovin-sviatoslav-lab3/fe/src/types/User.ts
+  1  export enum UserRole {
+  2    Admin = "admin",
+  3    Staff = "staff",
+  4    IoT = "iot",
+  5    DBO = "dbo",
+  6  }
+  7  
+  8  export type User = {
+  9    username: string;
+ 10    password: string;
+ 11    role: UserRole | null;
+ 12    phone: string;
+ 13  };
+
+
+В.41 Vaccine.ts.
+Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab3/pzpi-22-1-holovin-sviatoslav-lab3/fe/src/types/Vaccine.ts
+  1  export type Vaccine = {
+  2    vaccine_id: string;
+  3    name: string;
+  4    description: string;
+  5    min_temperature: number;
+  6    max_temperature: number;
+  7    min_humidity: number;
+  8    max_humidity: number;
+  9  };
+
+
+В.42 ACL.ts.
+Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab3/pzpi-22-1-holovin-sviatoslav-lab3/fe/src/utils/ACL.ts
+  1  import { UserRole } from "../types/User";
+  2  
+  3  export const ACL = {
+  4    vaccines: { allowedRoles: [UserRole.DBO, UserRole.Admin] },
+  5    orders: { allowedRoles: [UserRole.DBO, UserRole.Admin, UserRole.Staff] },
+  6    locations: { allowedRoles: [UserRole.DBO, UserRole.Admin, UserRole.Staff] },
+  7    notifications: {
+  8      allowedRoles: [UserRole.DBO, UserRole.Admin, UserRole.Staff],
+  9    },
+ 10    sensorData: { allowedRoles: [UserRole.DBO, UserRole.Admin, UserRole.Staff] },
+ 11    backup: { allowedRoles: [UserRole.DBO] },
+ 12  } satisfies Record<string, { allowedRoles: UserRole[] }>;
+
+
+В.43 fetchAbstract.ts.
+Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab3/pzpi-22-1-holovin-sviatoslav-lab3/fe/src/utils/fetchAbstract.ts
+  1  import { QueryClient } from "react-query";
+  2  import { CURRENT_USER_QUERY_KEY } from "../features/useCurrentUserQuery";
+  3  
+  4  export const fetchAbstract = async <T>(
+  5    context: {
+  6      queryClient: QueryClient;
+  7    },
+  8    options: {
+  9      preventUnauthorizedReset?: boolean;
+ 10    },
+ 11    urlPart: string,
+ 12    method: string,
+ 13    body?: T,
+ 14  ) => {
+ 15    const { queryClient } = context;
+ 16    const { preventUnauthorizedReset = false } = options;
+ 17  
+ 18    const response = await fetch(
+ 19      `${await import.meta.env.VITE_BE_URL}${urlPart}/`,
+ 20      {
+ 21        method,
+ 22        headers: {
+ 23          "Content-Type": "application/json",
+ 24          Authorization: `Bearer ${localStorage.getItem("jwt") ?? ""}`,
+ 25        },
+ 26        body: JSON.stringify(body),
+ 27      },
+ 28    );
+ 29  
+ 30    if (!response.ok) {
+ 31      if (response.status === 401 && !preventUnauthorizedReset) {
+ 32        localStorage.removeItem("jwt");
+ 33        queryClient.resetQueries(CURRENT_USER_QUERY_KEY);
+ 34      }
+ 35  
+ 36      const text = await response.text();
+ 37  
+ 38      if (text === "Token verification failed") {
+ 39        localStorage.removeItem("jwt");
+ 40        queryClient.resetQueries(CURRENT_USER_QUERY_KEY);
+ 41      }
+ 42  
+ 43      throw new Error(await response.text());
+ 44    }
+ 45  
+ 46    try {
+ 47      return await response.json();
+ 48    } catch (error) {
+ 49      console.log(error);
+ 50      return {};
+ 51    }
+ 52  };
+
+
+В.44 getStyledDataGrid.ts.
+Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab3/pzpi-22-1-holovin-sviatoslav-lab3/fe/src/utils/getStyledDataGrid.ts
+  1  import { styled } from "@mui/material";
+  2  import { DataGrid } from "@mui/x-data-grid";
+  3  
+  4  export const getStyledDataGrid = () => {
+  5    return styled(DataGrid)({
+  6      borderColor: "#242424",
+  7      "& .MuiDataGrid-columnHeaderTitleContainer, .MuiDataGrid-cell": {
+  8        display: "flex",
+  9        alignItems: "center",
+ 10        justifyContent: "center",
+ 11      },
+ 12      "& .MuiDataGrid-cellContent, .MuiDataGrid-columnHeaderTitle": {
+ 13        wordWrap: "break-word",
+ 14        whiteSpace: "normal",
+ 15        lineHeight: "1.5",
+ 16        textAlign: "center",
+ 17      },
+ 18      "& .MuiDataGrid-cell": {
+ 19        width: "300px",
+ 20      },
+ 21      "& .row-1": {
+ 22        backgroundColor: "#f5f5f5",
+ 23      },
+ 24      "& .row-2": {
+ 25        backgroundColor: "#e5e5e5",
+ 26        marginLeft: "10px",
+ 27      },
+ 28      "& .row-3": {
+ 29        backgroundColor: "#d5d5d5",
+ 30        marginLeft: "20px",
+ 31      },
+ 32      "& .row-4": {
+ 33        backgroundColor: "#c5c5c5",
+ 34        marginLeft: "30px",
+ 35      },
+ 36      "& .row-5": {
+ 37        backgroundColor: "#b5b5b5",
+ 38        marginLeft: "40px",
+ 39      },
+ 40      "& .row-6": {
+ 41        backgroundColor: "#a5a5a5",
+ 42        marginLeft: "50px",
+ 43      },
+ 44      "& .row-7": {
+ 45        backgroundColor: "#959595",
+ 46        marginLeft: "60px",
+ 47      },
+ 48    });
+ 49  };
+
+
+В.45 toEnum.ts.
+Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab3/pzpi-22-1-holovin-sviatoslav-lab3/fe/src/utils/toEnum.ts
+  1  export const toEnum = <TEnum extends Record<string, string>, TDefault>(
+  2    value: string,
+  3    enumObj: TEnum,
+  4    defaultValue?: TDefault,
+  5  ): TEnum[keyof TEnum] | TDefault | undefined => {
+  6    const enumValues = Object.values(enumObj);
+  7    if (enumValues.includes(value as TEnum[keyof TEnum])) {
+  8      return value as TEnum[keyof TEnum];
+  9    } else {
+ 10      return defaultValue;
+ 11    }
+ 12  };
+
+
+В.46 typeToMethod.ts.
+Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab3/pzpi-22-1-holovin-sviatoslav-lab3/fe/src/utils/typeToMethod.ts
+  1  export const typeToMethod = {
+  2    create: "POST",
+  3    update: "PATCH",
+  4    delete: "DELETE",
+  5  };
+
+
+В.47 useEdit.ts.
+Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab3/pzpi-22-1-holovin-sviatoslav-lab3/fe/src/utils/useEdit.ts
+  1  import { useEffect, useMemo } from "react";
+  2  import { UseQueryResult } from "react-query";
+  3  import { useParams } from "react-router-dom";
+  4  
+  5  export const useEdit = <TData extends Array<unknown>>(
+  6    useQuery: (id?: string) => UseQueryResult<TData, unknown>,
+  7    setError: (error: string) => void,
+  8  ) => {
+  9    const id = useParams().id;
+ 10    const isEdit = Boolean(id);
+ 11    const query = useQuery(id);
+ 12  
+ 13    useEffect(() => {
+ 14      if (query.isError) {
+ 15        setError((query.error as Error)?.message || "Unknown error");
+ 16      }
+ 17    }, [query.isError, query.error, setError]);
+ 18  
+ 19    return useMemo(
+ 20      () => ({
+ 21        id,
+ 22        isEdit,
+ 23        values: isEdit ? (query.data?.[0] as TData[0]) : undefined,
+ 24        isLoading: isEdit ? query.isLoading : false,
+ 25      }),
+ 26      [id, isEdit, query.data, query.isLoading],
+ 27    );
+ 28  };

@@ -12,9 +12,9 @@
 
 
 ЗВІТ
-з лабораторної роботи №4
+з лабораторної роботи №3
 з дисципліни "Архітектура програмного забезпечення"
-на тему: "Розробка мобільного клієнта системи"
+на тему: "Розробка мобільної частини системи"
 
 
 
@@ -105,7 +105,7 @@ ________________
 Новою складовою програмної системи є мобільний клієнт, реалізований на мові Kotlin із використанням сучасної архітектури Jetpack Compose у поєднанні з MVVM (Model–View–ViewModel). Цей компонент розроблено для забезпечення зручного доступу користувачів до ключових функцій системи зі смартфонів, а саме: перегляду сповіщень, управління замовленнями, а також автентифікації за допомогою JWT-токена.
 Вибір мови Kotlin зумовлений її повною сумісністю з Android-платформою, виразною синтаксичною моделлю, високим рівнем безпеки типів та підтримкою функціонального програмування. Kotlin також пропонує сучасні можливості асинхронної обробки (через корутини), що критично важливо для клієнтських застосунків, які працюють з мережею.
 Обрана архітектура MVVM дозволяє чітко розмежувати відповідальності між інтерфейсом користувача (View), логікою відображення та станом (ViewModel), а також джерелами даних (Model). Такий підхід полегшує тестування, спрощує супровід коду та сприяє масштабованості. UI реалізується через Jetpack Compose - декларативний фреймворк, що дозволяє створювати адаптивні, реактивні інтерфейси з мінімальними витратами на шаблонний код, гарантуючи кращу інтеграцію з ViewModel та спрощення життєвого циклу UI-компонентів.
-Можливості застосунку детально зображені на відповідній діаграмі, та включають перелік функціональних можливостей, доступних користувачеві в мобільному клієнті після успішної авторизації, а саме користувач має змогу здійснювати вхід у систему та вихід з неї, що активує або очищає JWT-токен відповідно. Після входу він отримує доступ до перегляду сповіщень, а також до управління замовленнями. Робота з замовленнями передбачає три основні дії: створення нового запису, редагування наявного та його видалення. Усі ці операції пов’язані з попереднім переглядом загального списку замовлень, який слугує точкою входу до відповідних форм. Після завершення створення, редагування або видалення користувач автоматично повертається до списку замовлень, що забезпечує циклічність взаємодії та логічну завершеність сценаріїв. Уся взаємодія зосереджена в межах одного модуля - мобільного клієнта, який забезпечує користувачеві інтуїтивно зрозумілий інтерфейс доступу до ключових функцій системи. Додатково представлено всі компоненти та пакети системи у вигляді діаграми, для кращого розуміння системи загалом.
+Можливості застосунку детально зображені на відповідній діаграмі, та включають перелік функціональних можливостей, доступних користувачеві в мобільному клієнті після успішної авторизації, а саме користувач має змогу здійснювати вхід у систему та вихід з неї, що активує або очищає JWT-токен відповідно. Після входу він отримує доступ до перегляду сповіщень, а також до управління замовленнями. Робота з замовленнями передбачає три основні дії: створення нового запису, редагування наявного та його видалення. Усі ці операції пов’язані з попереднім переглядом загального списку замовлень, який слугує точкою входу до відповідних форм. Після завершення створення, редагування або видалення користувач автоматично повертається до списку замовлень, що забезпечує циклічність взаємодії та логічну завершеність сценаріїв. Уся взаємодія зосереджена в межах одного модуля - мобільного клієнта, який забезпечує користувачеві інтуїтивно зрозумілий інтерфейс доступу до ключових функцій системи.
 Важливим складником для правильного розмежування відповідальностей є винесення окремих сторінок у окремі частини додатка, таким чином формуючи певну діаграму станів додатка, що відображає повний життєвий цикл взаємодії користувача з інтерфейсом програми залежно від наявності або відсутності JWT-токена, що визначає стан автентифікації. Після запуску мобільного застосунку активується початковий стан ПеревіркаJWT, який перевіряє наявність токена: якщо токен відсутній, користувач автоматично перенаправляється на екран входу (Login); якщо токен присутній - потрапляє одразу на головну сторінку (Home). Зі сторінки Login у разі успішної автентифікації користувач також потрапляє на Home. На головному екрані передбачено переходи до вкладок Notifications (сповіщення) та Orders (замовлення), які викликаються натисканням відповідних кнопок. Додатково, з головної сторінки можливий вихід із системи, що очищає токен і повертає користувача назад на Login. Екран Notifications дозволяє повернення назад до Home через системну кнопку. Підрозділ Orders реалізовано у вигляді вкладеного стану, де початковим є список замовлень (OrdersList); звідти можна створити нове замовлення (OrderFormНовий) або відредагувати існуюче (OrderFormРедагування). Обидва формуляри мають можливість повернення назад до списку - після створення, редагування, видалення чи відміни. Загалом, структура побудована на принципах детермінованого станового переходу з повним контролем життєвого циклу авторизації та користувацької взаємодії.
         Записуємо змістовне відео з описом проєкту, проставляємо таймкоди та завантажуємо на сервіс YouTube. Транскрипція та посилання на відео включено в додаток А.
 ________________
@@ -129,7 +129,7 @@ ________________
 
 Хронологічний опис відеозапису:
 0:00 Представлення студента групи ПЗПІ-22-1 Головіна Святослава.  
-0:03 Демонстрація результатів лабораторної роботи №4 з предмету "Архітектура ПЗ".  
+0:03 Демонстрація результатів лабораторної роботи №3 з предмету "Архітектура ПЗ".  
 0:12 Завдання — створити мобільний клієнт для взаємодії з системою контролю зберігання вакцин.  
 0:24 Операції: перегляд та зміна інформації, додаткові можливості для користувача.  
 0:38 Огляд звіту: історія змін, доданий функціонал для роботи із системою та сповіщеннями.  
@@ -158,7 +158,7 @@ ________________
 9:27 Лабораторна не вимагала змін у сервері, демонстрація гнучкого розширення.  
 9:50 Можливість додавання нових моделей, розділів, екранів.  
 10:02 Архітектура забезпечує зручну підтримку функціональності.  
-10:05 Завершення демонстрації лабораторної роботи №4. Подяка за перегляд.
+10:05 Завершення демонстрації лабораторної роботи №3. Подяка за перегляд.
 ________________
 
 
@@ -168,27 +168,19 @@ ________________
 
   
 
-Рисунок Б.1 — UML-діаграма прецедентів
+Рисунок Б.1 - Use-case діаграма мобільного клієнту
 
 
   
 
-Рисунок Б.2 — UML-діаграма компонентів
-  
-
-Рисунок Б.3 — UML-діаграма станів
-
-
-  
-
-Рисунок Б.4 — UML-діаграма пакетів
+Рисунок Б.2 - Діаграма станів мобільного клієнту
 ________________
 ДОДАТОК В
 ПРОГРАМНИЙ КОД
 
 
 В.1 Клієнт для вазаємодії з серверною частиною.
-Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab4/pzpi-22-1-holovin-sviatoslav-lab4/mobile/app/src/main/java/com/example/lb3/ApiClient.kt
+Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab3/pzpi-22-1-holovin-sviatoslav-lab3/mobile/app/src/main/java/com/example/lb3/ApiClient.kt
   1  package com.example.lb3
   2  
   3  import org.json.JSONArray
@@ -305,7 +297,7 @@ ________________
 
 
 В.2 Головний файл.
-Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab4/pzpi-22-1-holovin-sviatoslav-lab4/mobile/app/src/main/java/com/example/lb3/App.kt
+Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab3/pzpi-22-1-holovin-sviatoslav-lab3/mobile/app/src/main/java/com/example/lb3/App.kt
   1  package com.example.lb3
   2  
   3  import androidx.compose.foundation.layout.padding
@@ -343,7 +335,7 @@ ________________
 
 
 В.3 Головний екран.
-Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab4/pzpi-22-1-holovin-sviatoslav-lab4/mobile/app/src/main/java/com/example/lb3/HomeScreen.kt
+Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab3/pzpi-22-1-holovin-sviatoslav-lab3/mobile/app/src/main/java/com/example/lb3/HomeScreen.kt
   1  package com.example.lb3
   2  
   3  import androidx.compose.foundation.layout.*
@@ -392,7 +384,7 @@ ________________
 
 
 В.4 Сторінка авторизації.
-Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab4/pzpi-22-1-holovin-sviatoslav-lab4/mobile/app/src/main/java/com/example/lb3/LoginScreen.kt
+Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab3/pzpi-22-1-holovin-sviatoslav-lab3/mobile/app/src/main/java/com/example/lb3/LoginScreen.kt
   1  package com.example.lb3
   2  
   3  import androidx.compose.foundation.layout.*
@@ -465,7 +457,7 @@ ________________
 
 
 В.5 Корневий файл.
-Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab4/pzpi-22-1-holovin-sviatoslav-lab4/mobile/app/src/main/java/com/example/lb3/MainActivity.kt
+Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab3/pzpi-22-1-holovin-sviatoslav-lab3/mobile/app/src/main/java/com/example/lb3/MainActivity.kt
   1  package com.example.lb3
   2  
   3  import android.content.Context
@@ -505,7 +497,7 @@ ________________
 
 
 В.6 Модель повідомлення.
-Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab4/pzpi-22-1-holovin-sviatoslav-lab4/mobile/app/src/main/java/com/example/lb3/Notification.kt
+Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab3/pzpi-22-1-holovin-sviatoslav-lab3/mobile/app/src/main/java/com/example/lb3/Notification.kt
   1  package com.example.lb3
   2  
   3  data class Notification(
@@ -518,7 +510,7 @@ ________________
 
 
 В.7 Список повідомлень
-Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab4/pzpi-22-1-holovin-sviatoslav-lab4/mobile/app/src/main/java/com/example/lb3/NotificationScreen.kt
+Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab3/pzpi-22-1-holovin-sviatoslav-lab3/mobile/app/src/main/java/com/example/lb3/NotificationScreen.kt
   1  package com.example.lb3
   2  
   3  import androidx.compose.foundation.layout.*
@@ -571,7 +563,7 @@ ________________
 
 
 В.8 Модель замовлення.
-Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab4/pzpi-22-1-holovin-sviatoslav-lab4/mobile/app/src/main/java/com/example/lb3/Order.kt
+Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab3/pzpi-22-1-holovin-sviatoslav-lab3/mobile/app/src/main/java/com/example/lb3/Order.kt
   1  package com.example.lb3
   2  
   3  data class Order(
@@ -583,7 +575,7 @@ ________________
 
 
 В.9 Сторінка редагування замовлення.
-Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab4/pzpi-22-1-holovin-sviatoslav-lab4/mobile/app/src/main/java/com/example/lb3/OrderFormScreen.kt
+Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab3/pzpi-22-1-holovin-sviatoslav-lab3/mobile/app/src/main/java/com/example/lb3/OrderFormScreen.kt
   1  package com.example.lb3
   2  
   3  import androidx.compose.foundation.layout.*
@@ -675,7 +667,7 @@ ________________
 
 
 В.10 Список замовлень
-Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab4/pzpi-22-1-holovin-sviatoslav-lab4/mobile/app/src/main/java/com/example/lb3/OrdersListScreen.kt
+Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab3/pzpi-22-1-holovin-sviatoslav-lab3/mobile/app/src/main/java/com/example/lb3/OrdersListScreen.kt
   1  package com.example.lb3
   2  
   3  import androidx.compose.foundation.clickable
