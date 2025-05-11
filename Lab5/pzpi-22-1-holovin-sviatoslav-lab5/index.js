@@ -8,6 +8,6 @@ const PORT = process.env.PORT || 3000;
 
 createServer(PORT);
 
-(async () => {
-  await sequelize.sync({ force: true });
-})();
+// (async () => {
+//   await sequelize.sync({ alter: true });
+// })();
