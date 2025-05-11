@@ -110,7 +110,7 @@ ________________
 3 ОПИС ВИКОНАНОЇ РОБОТИ
 
 
-Перенесено всю попередню серверну частину без жодних змін, а саме: усі моделі, маршрути та сервіси, а також систему авторизації та ролей. Для взаємодії з базою застосовано Sequelize-моделі, серед яких Location, Inventory, InventoryItem, Vaccine, SensorData, Notification, Order, OrderItem та User, зберігаємо наявну валідацію та обробку помилок у catch-блоках, що повертають відповідні HTTP-статуси: 200, 201, 204, 404 або 400.
+Перенесено всю попередню серверну частину без жодних змін, а саме: усі моделі, маршрути та сервіси, а також систему авторизації та ролей. Для взаємодії з базою застосовано Sequelize-моделі, серед яких Location, Inventory, InventoryItem, Vaccine, SensorData, Notification, Order, OrderItem та User, зберігаємо наявну валідацію та обробку помилок у catch-блоках, що повертають відповідні HTTP-статуси: 200, 201, 204, 404 або 400. ER діаграма даних, що зображує всі моделі та їх взаємодію зображена на відповідній діаграмі. Діаграма структури бази даних, що базується на PostgreSQL, зображена на відповідній діаграмі. UML діаграма прецедентів для серверної частини системи з нововведеннями зображена на відповідній діаграмі.
         Нововведенням є математичний алгоритм для бізнес-логіки формування звіту, що зображено на відповідній діаграмі активностей і котрий працює так: після отримання HTTP-запиту з ідентифікатором локації сервер спершу намагається знайти відповідний запис у таблиці локацій. Якщо локацію не виявлено, обробка миттєво припиняється й клієнту повертається статус 404 із повідомленням про відсутність ресурсу. Коли запис існує, система завантажує всі інвентарі для цієї локації та для кожного інвентаря збирає його позиції разом із даними про вакцини, підраховує сумарну використану кількість доз і формує короткий опис збережених вакцин. Після обробки всіх інвентарів отримані дані об’єднуються з даними локації в підсумковий JSON-звіт, який відправляється клієнту зі статусом 200. У разі будь-якого збою, наприклад проблем із доступом до бази чи під час агрегації, потік переходить у секцію обробки виключень і повертає статус 400 із текстовим поясненням помилки. Цей механізм формування звітів є ключовим складником відповідного розділу для веб-інтерфейсу нашої системи, який даватиме змогу переглядати звіти по обраним локаціям, надаючи операторам повну агреговану інформацію.
         Далі відокремимо операції за ролями кожного користувача системи. У системі виділено три категорії користувачів із жорстко обмеженими правами: операторів, адміністраторів та IoT‑пристрої. Оператори можуть через веб-інтерфейс, мобільний-інтерфейс та відповідні API-ендпоінти переглядати й керувати даними щодо локацій, запасів, елементів інвентарю, замовлень і вакцин, виконувати створення, оновлення й видалення записів у межах бізнес-логіки (із валідацією лімітів та обчисленнями під час змін). Адміністратори, окрім усіх операцій операторів, володіють правом створювати сповіщення та повністю управляти обліковими записами користувачів (створення, змінення, видалення) і мають доступ до всіх існуючих ресурсів без додаткових обмежень. IoT‑пристрої формують окремий клас клієнтів, що автентифікуються з роллю IOT і мають право лише надсилати SensorData через спеціалізований ендпоінт - їхні дані проходять автоматичну перевірку, а у разі критичних відхилень від норми викликається відправка аварійного сповіщення, але доступ до інших API їм закритий. Алгоритм обмеження прав зображено на відповідній діаграмі та він має такий принцип, Коли викликається createAuthMiddleware, функція спершу зважає на системну змінну MODE_TEST. Якщо вона встановлена у true, середовище вважається тестовим: у такому разі метод одразу повертає порожній масив і маршрут працює без жодної автентифікації чи перевірки прав. У звичайному робочому режимі функція формує і повертає масив із двох мідлверів. Перший із них - jwt; він аналізує заголовок запиту, перевіряє чинність JWT‑токена та, у разі успіху, записує отриману інформацію про користувача у req.user. Якщо токен відсутній або некоректний, jwt завершує обробку негайно й відповідає кодом 401 «Unauthorized». Після нього управління переходить до другого мідлвера, умовно названого aclChecker. Він знову звертається до req.user: якщо об’єкт користувача не створено, запит одразу відхиляється з тим самим кодом 401. Коли користувач присутній, aclChecker порівнює його роль із переліком дозволених ролей, переданим у початковому виклику createAuthMiddleware. Якщо роль користувача відсутня або не входить до переліку, повертається відповідь 403 «Forbidden». Лише тоді, коли автентифікація пройшла успішно й роль відповідає вимогам, мідлвер викликає next(), передаючи запит далі - до власне контролера маршруту. Таким чином, потік послідовно забезпечує автентифікацію, авторизацію й чіткий розподіл відповідальності між мідлверами.
         Додатково введемо нову роль керівника базою даних, який матиме змогу робити експорт та імпорт даних через спеціалізовані ендпоінти. Алгоритм експорту починається з отримання запиту POST /backup/export, у якому клієнт передає пароль; сервер перевіряє наявність поля password і у разі відсутності негайно повертає HTTP 400 з повідомленням «password required». Якщо пароль наявний, система виконує топологічне сортування моделей за залежностями між таблицями, послідовно зчитує всі записи з кожної моделі, збирає їх у єдиний об’єкт, серіалізує у JSON та шифрує отриманий рядок функцією encrypt із використанням пароля користувача. Зашифровані дані повертаються у тілі відповіді у форматі { "db": "<encrypted_data>" } зі статусом 200. На діаграмі активностей цей процес відображено як послідовність кроків від перевірки пароля до шифрування й відправки відповіді. Під час імпорту клієнт надсилає POST /backup/import із полями password та data; сервер спершу перевіряє їхню наявність і, якщо будь‑яке відсутнє, повертає HTTP 400 з текстом «password and data required». Далі відбувається спроба дешифрування через decrypt: некоректний пароль або пошкоджені дані призводять до HTTP 400 «invalid password or corrupted data». Після успішного розшифрування та парсингу JSON система повторно визначає порядок моделей, відкриває транзакцію й у зворотному порядку очищує таблиці через truncate з cascade, а потім у прямому порядку виконує bulkCreate валідованих записів. У разі помилки всередині транзакції відбувається ROLLBACK із відповіддю HTTP 500 «restore failed», а за відсутності помилок транзакція фіксується й сервер надсилає HTTP 200 «restored». На діаграмі активностей імпорт відображено як ланцюжок перевірок, операцій з видалення, вставки та коміту або скасування змін. Обидва алгоритми представлені на відповідній діаграмі.
@@ -170,118 +170,41 @@ ________________
 
   
 
-Рисунок Б.1 - Діаграма станів для математичного функціоналу формування звітів
+Рисунок Б.1 — ER-діаграма даних
 
 
   
 
-Рисунок Б.2 - Діаграма станів для алгоритму перевірки доступу в систему
+Рисунок Б.2 — Структура бази даних
+  
+
+Рисунок Б.3 — UML-діаграма прецедентів
+  
+
+Рисунок Б.4  — UML-діаграма станів для математичного функціоналу формування звітів
 
 
   
 
-Рисунок Б.3 - Діаграма станів для алгоритму експорту бази даних
+Рисунок Б.5 — UML-діаграма взаємодії для алгоритму перевірки доступу в систему
 
 
   
 
-Рисунок Б.4 - Діаграма станів для алгоритму імпорту бази даних
+Рисунок Б.6 — UML-діаграма станів для алгоритму експорту бази даних
+
+
+  
+
+Рисунок Б.7 — UML-діаграма станів для алгоритму імпорту бази даних
 ________________
 ДОДАТОК В
 ПРОГРАМНИЙ КОД
 
 
-В.1 Маршрути backup.
-Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab2/pzpi-22-1-holovin-sviatoslav-lab2/routes/backup.js
- 1  const express = require('express');
-  2  const { sequelize } = require('../services/db');
-  3  const { encrypt, decrypt } = require('../services/secureText');
-  4  const { createAuthMiddleware } = require('../services/createAuthMiddleware');
-  5  const { roles } = require('../services/roles');
-  6  
-  7  const json = express.json({ limit: '150mb' });
-  8  const router = express.Router();
-  9  
- 10  function topo(models) {
- 11    const byTable = Object.fromEntries(models.map((m) => [m.getTableName(), m]));
- 12  
- 13    const graph = new Map();
- 14    models.forEach((m) => {
- 15      const deps = new Set();
- 16  
- 17      Object.values(m.rawAttributes).forEach((attr) => {
- 18        const ref = attr.references?.model;
- 19        if (!ref) return;
- 20  
- 21        const target = typeof ref === 'string' ? byTable[ref] : ref;
- 22  
- 23        if (target && target !== m) deps.add(target.name);
- 24      });
- 25  
- 26      graph.set(m.name, deps);
- 27    });
- 28  
- 29    const ordered = [];
- 30    const temp = new Set();
- 31  
- 32    function dfs(name) {
- 33      if (ordered.includes(name)) return;
- 34      if (temp.has(name)) return;
- 35      temp.add(name);
- 36      graph.get(name).forEach(dfs);
- 37      temp.delete(name);
- 38      ordered.push(name);
- 39    }
- 40  
- 41    [...graph.keys()].forEach(dfs);
- 42    return ordered.map((n) => models.find((m) => m.name === n));
- 43  }
- 44  
- 45  async function exp(req, res) {
- 46    const { password } = req.body || {};
- 47    if (!password) return res.status(400).send('password required');
- 48  
- 49    const models = topo(Object.values(sequelize.models));
- 50    const dump = {};
- 51    for (const m of models) dump[m.name] = await m.findAll({ raw: true });
- 52  
- 53    const encrypted = encrypt(JSON.stringify(dump), password);
- 54    res.json({ db: encrypted });
- 55  }
- 56  
- 57  async function imprt(req, res) {
- 58    const { password, data } = req.body || {};
- 59    if (!password || !data)
- 60      return res.status(400).send('password and data required');
- 61    let payload;
- 62    try {
- 63      payload = JSON.parse(decrypt(data, password));
- 64    } catch {
- 65      return res.status(400).send('invalid password or corrupted data');
- 66    }
- 67    const models = topo(Object.values(sequelize.models));
- 68    const rev = [...models].reverse();
- 69    await sequelize.transaction(async (t) => {
- 70      for (const m of rev)
- 71        await m.destroy({ truncate: true, cascade: true, transaction: t });
- 72      for (const m of models)
- 73        await m.bulkCreate(payload[m.name] || [], {
- 74          validate: true,
- 75          transaction: t,
- 76        });
- 77    });
- 78    res.send('restored');
- 79  }
- 80  
- 81  router.post('/import', ...createAuthMiddleware([roles.DBO]), imprt);
- 82  router.post('/export', ...createAuthMiddleware([roles.DBO]), exp);
- 83  
- 84  module.exports = { router };
-
-
-В.2 Маршрути location.
+В.1 Математична обробка прикладних даних.
 Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab2/pzpi-22-1-holovin-sviatoslav-lab2/routes/location.js
- 1  'use strict';
+  1  'use strict';
   2  
   3  const { Inventory } = require('../models/Inventory');
   4  const { InventoryItem } = require('../models/InventoryItem');
@@ -447,9 +370,207 @@ ________________
 164  );
 165  
 166  module.exports = { router };
+В.2 Адміністрування бізнес-логіки системи.
+Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab2/pzpi-22-1-holovin-sviatoslav-lab2/routes/vaccine.js
+  1  'use strict';
+  2  
+  3  const { InventoryItem } = require('../models/InventoryItem');
+  4  const { OrderItem } = require('../models/OrderItem');
+  5  const { Vaccine } = require('../models/Vaccine');
+  6  const express = require('express');
+  7  const { createAuthMiddleware } = require('../services/createAuthMiddleware');
+  8  const { roles } = require('../services/roles');
+  9  
+ 10  const router = express.Router();
+ 11  
+ 12  const getAll = async (req, res) => {
+ 13    try {
+ 14      const vaccines = await Vaccine.findAll();
+ 15      res.send(vaccines);
+ 16    } catch (err) {
+ 17      res.status(400).send(err.message);
+ 18    }
+ 19  };
+ 20  
+ 21  const getOne = async (req, res) => {
+ 22    const { id } = req.params;
+ 23  
+ 24    try {
+ 25      const vaccine = await Vaccine.findByPk(parseInt(id));
+ 26      if (!vaccine) {
+ 27        return res.status(404).send('Vaccine not found');
+ 28      }
+ 29      res.send(vaccine);
+ 30    } catch (err) {
+ 31      res.status(400).send(err.message);
+ 32    }
+ 33  };
+ 34  
+ 35  const add = async (req, res) => {
+ 36    const vaccineData = { ...req.body };
+ 37  
+ 38    try {
+ 39      const vaccine = await Vaccine.create(vaccineData);
+ 40      res.status(201).send(vaccine);
+ 41    } catch (err) {
+ 42      res.status(400).send(err.message);
+ 43    }
+ 44  };
+ 45  
+ 46  const update = async (req, res) => {
+ 47    const { id } = req.params;
+ 48    const vaccineData = { ...req.body };
+ 49  
+ 50    try {
+ 51      await Vaccine.update(vaccineData, {
+ 52        where: { vaccine_id: parseInt(id) },
+ 53      });
+ 54      const vaccine = await Vaccine.findByPk(parseInt(id));
+ 55      if (!vaccine) {
+ 56        return res.status(404).send('Vaccine not found');
+ 57      }
+ 58      res.send(vaccine);
+ 59    } catch (err) {
+ 60      res.status(400).send(err.message);
+ 61    }
+ 62  };
+ 63  
+ 64  const remove = async (req, res) => {
+ 65    const { id } = req.params;
+ 66  
+ 67    try {
+ 68      await InventoryItem.destroy({ where: { vaccine_id: parseInt(id) } });
+ 69      await OrderItem.destroy({ where: { vaccine_id: parseInt(id) } });
+ 70      const deleted = await Vaccine.destroy({
+ 71        where: { vaccine_id: parseInt(id) },
+ 72      });
+ 73      if (!deleted) {
+ 74        return res.status(404).send('Vaccine not found');
+ 75      }
+ 76      res.status(204).send({});
+ 77    } catch (err) {
+ 78      res.status(400).send(err.message);
+ 79    }
+ 80  };
+ 81  
+ 82  router.get(
+ 83    '/',
+ 84    ...createAuthMiddleware([roles.STAFF, roles.ADMIN, roles.DBO]),
+ 85    getAll,
+ 86  );
+ 87  router.get(
+ 88    '/:id',
+ 89    ...createAuthMiddleware([roles.STAFF, roles.ADMIN, roles.DBO]),
+ 90    getOne,
+ 91  );
+ 92  router.post(
+ 93    '/',
+ 94    ...createAuthMiddleware([roles.STAFF, roles.ADMIN, roles.DBO]),
+ 95    add,
+ 96  );
+ 97  router.patch(
+ 98    '/:id',
+ 99    ...createAuthMiddleware([roles.STAFF, roles.ADMIN, roles.DBO]),
+100    update,
+101  );
+102  router.delete(
+103    '/:id',
+104    ...createAuthMiddleware([roles.STAFF, roles.ADMIN, roles.DBO]),
+105    remove,
+106  );
+107  
+108  module.exports = { router };
 
 
-В.3 Сервіс createAuthMiddleware.
+В.3 Резервне копіювання користувацьких даних.
+Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab2/pzpi-22-1-holovin-sviatoslav-lab2/routes/backup.js
+  1  const express = require('express');
+  2  const { sequelize } = require('../services/db');
+  3  const { encrypt, decrypt } = require('../services/secureText');
+  4  const { createAuthMiddleware } = require('../services/createAuthMiddleware');
+  5  const { roles } = require('../services/roles');
+  6  
+  7  const json = express.json({ limit: '150mb' });
+  8  const router = express.Router();
+  9  
+ 10  function topo(models) {
+ 11    const byTable = Object.fromEntries(models.map((m) => [m.getTableName(), m]));
+ 12  
+ 13    const graph = new Map();
+ 14    models.forEach((m) => {
+ 15      const deps = new Set();
+ 16  
+ 17      Object.values(m.rawAttributes).forEach((attr) => {
+ 18        const ref = attr.references?.model;
+ 19        if (!ref) return;
+ 20  
+ 21        const target = typeof ref === 'string' ? byTable[ref] : ref;
+ 22  
+ 23        if (target && target !== m) deps.add(target.name);
+ 24      });
+ 25  
+ 26      graph.set(m.name, deps);
+ 27    });
+ 28  
+ 29    const ordered = [];
+ 30    const temp = new Set();
+ 31  
+ 32    function dfs(name) {
+ 33      if (ordered.includes(name)) return;
+ 34      if (temp.has(name)) return;
+ 35      temp.add(name);
+ 36      graph.get(name).forEach(dfs);
+ 37      temp.delete(name);
+ 38      ordered.push(name);
+ 39    }
+ 40  
+ 41    [...graph.keys()].forEach(dfs);
+ 42    return ordered.map((n) => models.find((m) => m.name === n));
+ 43  }
+ 44  
+ 45  async function exp(req, res) {
+ 46    const { password } = req.body || {};
+ 47    if (!password) return res.status(400).send('password required');
+ 48  
+ 49    const models = topo(Object.values(sequelize.models));
+ 50    const dump = {};
+ 51    for (const m of models) dump[m.name] = await m.findAll({ raw: true });
+ 52  
+ 53    const encrypted = encrypt(JSON.stringify(dump), password);
+ 54    res.json({ db: encrypted });
+ 55  }
+ 56  
+ 57  async function imprt(req, res) {
+ 58    const { password, data } = req.body || {};
+ 59    if (!password || !data)
+ 60      return res.status(400).send('password and data required');
+ 61    let payload;
+ 62    try {
+ 63      payload = JSON.parse(decrypt(data, password));
+ 64    } catch {
+ 65      return res.status(400).send('invalid password or corrupted data');
+ 66    }
+ 67    const models = topo(Object.values(sequelize.models));
+ 68    const rev = [...models].reverse();
+ 69    await sequelize.transaction(async (t) => {
+ 70      for (const m of rev)
+ 71        await m.destroy({ truncate: true, cascade: true, transaction: t });
+ 72      for (const m of models)
+ 73        await m.bulkCreate(payload[m.name] || [], {
+ 74          validate: true,
+ 75          transaction: t,
+ 76        });
+ 77    });
+ 78    res.send('restored');
+ 79  }
+ 80  
+ 81  router.post('/import', ...createAuthMiddleware([roles.DBO]), imprt);
+ 82  router.post('/export', ...createAuthMiddleware([roles.DBO]), exp);
+ 83  
+ 84  module.exports = { router };
+
+
+В.4 Сервіс createAuthMiddleware.
 Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab2/pzpi-22-1-holovin-sviatoslav-lab2/services/createAuthMiddleware.js
  1  const { jwt } = require('./jwt');
   2  
@@ -478,7 +599,7 @@ ________________
  25  module.exports = { createAuthMiddleware };
 
 
-В.4 Сервіс jwt.
+В.5 Сервіс jwt.
 Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab2/pzpi-22-1-holovin-sviatoslav-lab2/services/jwt.js
  1  const jwtLib = require('jsonwebtoken');
   2  
@@ -505,7 +626,7 @@ ________________
  23  module.exports = { jwt };
 
 
-В.5 Сервіс secureText.
+В.6 Сервіс secureText.
 Репозиторій: https://github.com/NureHolovinSviatoslav/apz-pzpi-22-1-holovin-sviatoslav/blob/main/Lab2/pzpi-22-1-holovin-sviatoslav-lab2/services/secureText.js
  1  const crypto = require('crypto');
   2  
